@@ -8,14 +8,6 @@ import { AuthGuard } from "../providers/authentication-guard";
 import React from "react";
 import type { NextPage } from "next";
 
-// const MyApp: AppType = ({ Component, pageProps }) => {
-//   return (
-//     <Auth0ProviderWithNavigate>
-//       <Component {...pageProps} />
-//     </Auth0ProviderWithNavigate>
-//   );
-// };
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type NextApplicationPage<P = any, IP = P> = NextPage<P, IP> & {
   requireAuth?: boolean;
@@ -39,16 +31,6 @@ const Root = (props: AppProps) => {
         <Component {...pageProps} />
       )}
     </Auth0ProviderWithNavigate>
-    // <Auth0Provider
-    //   domain={DOMAIN}
-    //   clientId={CLIENT_ID}
-    //   authorizationParams={{
-    //     redirect_uri: CALLBACK_URL,
-    //   }}
-    //   // onRedirectCallback={onRedirectCallback}
-    // >
-    //   <Component {...pageProps} />
-    // </Auth0Provider>
   );
 };
 

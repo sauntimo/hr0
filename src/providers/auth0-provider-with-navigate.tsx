@@ -18,10 +18,6 @@ export const Auth0ProviderWithNavigate = ({
     void router.push(appState?.returnTo || window.location.pathname);
   };
 
-  // if (!(DOMAIN && CLIENT_ID && CALLBACK_URL)) {
-  //   return null;
-  // }
-
   return (
     <Auth0Provider
       domain={env.NEXT_PUBLIC_AUTH0_DOMAIN}
