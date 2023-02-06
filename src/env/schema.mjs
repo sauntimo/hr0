@@ -27,6 +27,13 @@ export const serverEnv = {
  */
 export const clientSchema = z.object({
   // NEXT_PUBLIC_CLIENTVAR: z.string(),
+  NEXT_PUBLIC_API_SERVER_URL: z.string().url(),
+  NEXT_PUBLIC_AUTH0_DOMAIN: z.string(),
+  NEXT_PUBLIC_AUTH0_CLIENT_ID: z.string(),
+  NEXT_PUBLIC_AUTH0_CALLBACK_URL: z.string().url(),
+  NEXT_PUBLIC_AUTH0_AUDIENCE: z.string().url(),
+  NEXT_PUBLIC_STATE: z.string(),
+  NEXT_PUBLIC_SCOPES: z.string(),
 });
 
 /**
@@ -37,4 +44,11 @@ export const clientSchema = z.object({
  */
 export const clientEnv = {
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+  NEXT_PUBLIC_API_SERVER_URL: process.env.NEXT_PUBLIC_API_SERVER_URL,
+  NEXT_PUBLIC_AUTH0_DOMAIN: process.env.NEXT_PUBLIC_AUTH0_DOMAIN,
+  NEXT_PUBLIC_AUTH0_CLIENT_ID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
+  NEXT_PUBLIC_AUTH0_CALLBACK_URL: process.env.NEXT_PUBLIC_AUTH0_CALLBACK_URL,
+  NEXT_PUBLIC_AUTH0_AUDIENCE: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
+  NEXT_PUBLIC_STATE: process.env.NEXT_PUBLIC_STATE,
+  NEXT_PUBLIC_SCOPES: process.env.NEXT_PUBLIC_SCOPES,
 };

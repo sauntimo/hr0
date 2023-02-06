@@ -19,9 +19,7 @@ export const Layout: React.FC<PropsWithChildren<LayoutProps>> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
-      <main className="flex flex-col items-center justify-center">
-        {children}
-      </main>
+      <main className="items-center justify-center">{children}</main>
     </>
   );
 };
