@@ -7,6 +7,9 @@ import { Auth0ProviderWithNavigate } from "../providers/auth0-provider-with-navi
 import { AuthGuard } from "../providers/authentication-guard";
 import React from "react";
 import type { NextPage } from "next";
+import { AppRouter } from "../server/api/root";
+import { withTRPC } from "@trpc/next";
+import { httpBatchLink } from "@trpc/client";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type NextApplicationPage<P = any, IP = P> = NextPage<P, IP> & {
@@ -34,4 +37,17 @@ const Root = (props: AppProps) => {
   );
 };
 
-export default api.withTRPC(Root);
+let token: string;
+
+export default withTRPC<AppRouter>({
+  config: () => {
+    const url = (serverConfig.app.url || "").concat("/api/trpc");
+
+    return {
+      url,
+      links: [httpBatchLink({ url })],
+      transformer: superjson,
+    };
+  },
+  ssr: true,
+})(Root);

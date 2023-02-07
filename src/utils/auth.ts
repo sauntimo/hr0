@@ -21,15 +21,15 @@ export const webAuth = new auth0.WebAuth({
   clientID: env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
 });
 
-export const login = () => {
-  webAuth.authorize({
-    responseType: "code",
-    audience: env.NEXT_PUBLIC_AUTH0_AUDIENCE,
-    scope: env.NEXT_PUBLIC_SCOPES,
-    clientID: env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
-    redirectUri: env.NEXT_PUBLIC_AUTH0_CALLBACK_URL,
-  });
-};
+// export const login = () => {
+//   webAuth.authorize({
+//     responseType: "code",
+//     audience: env.NEXT_PUBLIC_AUTH0_AUDIENCE,
+//     scope: env.NEXT_PUBLIC_SCOPES,
+//     clientID: env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
+//     redirectUri: env.NEXT_PUBLIC_AUTH0_CALLBACK_URL,
+//   });
+// };
 
 export const redirecLoginOptions: RedirectLoginOptions = {
   appState: {
@@ -37,7 +37,7 @@ export const redirecLoginOptions: RedirectLoginOptions = {
   },
   authorizationParams: {
     prompt: "consent",
-    screen_hint: "signin",
+    // screen_hint: "signin",
   },
 };
 

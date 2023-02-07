@@ -14,7 +14,7 @@ export const Layout: React.FC<PropsWithChildren<LayoutProps>> = ({
   return (
     <>
       <Head>
-        <title>{title} | hr0</title>
+        <title>{`${title} | hr0`}</title>
         <meta name="description" content="Demo HR App built on Auth0" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

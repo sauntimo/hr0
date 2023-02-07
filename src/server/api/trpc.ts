@@ -1,3 +1,5 @@
+import jsonwebtoken from "jsonwebtoken";
+
 /**
  * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
  * 1. You want to modify request context (see Part 1).
@@ -43,8 +45,19 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+export const createTRPCContext = async (opts: CreateNextContextOptions) => {
+  const getUserFromHeader = () => {
+    if (opts.req.headers.authorization) {
+      const user = jsonwebtoken.decode(
+        opts.req.headers.authorization.split(" ")[1] ?? ""
+      );
+      return user;
+    }
+    return null;
+  };
+  const user = getUserFromHeader();
+
+  return { ...createInnerTRPCContext({}), user };
 };
 
 /**
@@ -85,3 +98,32 @@ export const createTRPCRouter = t.router;
  * can still access user session data if they are logged in.
  */
 export const publicProcedure = t.procedure;
+
+const isAuthed = t.middleware(({ next, ctx }) => {
+  console.log("isAuthed middleware");
+  console.log("ctx.user", ctx.user);
+
+  // if (!ctx.user?.isAdmin) {
+  //   throw new TRPCError({ code: "UNAUTHORIZED" });
+  // }
+
+  const user: AuthProviderUser = {
+    organization_id: "organization_id",
+    id: "id",
+    name: "name",
+    email: "email",
+  };
+
+  return next({
+    ctx: { user },
+  });
+});
+// you can reuse this for any procedure
+export const protectedProcedure = t.procedure.use(isAuthed);
+
+interface AuthProviderUser {
+  name: string;
+  email: string;
+  id: string;
+  organization_id: string;
+}

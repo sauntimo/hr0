@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Container } from "../components/container";
 import { Layout } from "../components/layout";
 import { TextInput } from "../components/text-input";
+import { api } from "../utils/api";
 import type { NextApplicationPage } from "./_app";
 
 const Profile: NextApplicationPage = () => {
@@ -20,6 +21,8 @@ const Profile: NextApplicationPage = () => {
     return null;
   }
 
+  const addOneResult = api.user.addOne.useQuery();
+
   return (
     <Layout title="Profile">
       <Container title="Profile">
@@ -32,6 +35,14 @@ const Profile: NextApplicationPage = () => {
               editable={false}
             />
           </div>
+          {/* <button className="btn-outline btn-primary btn" onClick={handleTest}>
+            Test tRPC
+          </button> */}
+          <p>
+            {addOneResult.data
+              ? JSON.stringify(addOneResult.data, null, 2)
+              : "Loading tRPC query..."}
+          </p>
           <pre className="whitespace-pre-wrap">
             {JSON.stringify(user, null, 2)}
           </pre>

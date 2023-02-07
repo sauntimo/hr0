@@ -5,7 +5,7 @@ import { Layout } from "../components/layout";
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const hello = api.user.hello.useQuery({ text: "from tRPC" });
 
   return (
     <Layout title="Home">
