@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model note {
+  id                Int       @id @default(autoincrement())
+  author_id         Int
+  subject_id        Int
+  title             String
+  body              String
+  created_at        DateTime  @default(now()) @db.Timestamp()
+  updated_at        DateTime? @updatedAt @db.Timestamp()
+  note_author_user  user      @relation("note_author_to_user", fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  note_subject_user user      @relation("note_subject_to_user", fields: [subject_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([author_id, subject_id, id], map: "note_author_subject")
+  @@index([subject_id, id], map: "note_subject_author")
+}
+
+model organization {
+  id                 Int       @id @default(autoincrement())
+  name               String?
+  created_at         DateTime  @default(now()) @db.Timestamp()
+  updated_at         DateTime? @updatedAt @db.Timestamp()
+  auth_provider_id   String
+  auth_provider_name String
+  user               user[]
+
+  @@unique([auth_provider_id], map: "organization_unique_auth_pvoider_id")
+  @@unique([auth_provider_name], map: "organization_unique_auth_pvoider_name")
+  @@index([name, id], map: "organization_name")
+}
+
+model user {
+  id                       Int           @id @default(autoincrement())
+  sub                      String
+  organization_id          Int
+  name                     String
+  email                    String
+  job_title                String?
+  salary                   Int?
+  created_at               DateTime      @default(now()) @db.Timestamp()
+  updated_at               DateTime?     @updatedAt @db.Timestamp()
+  email_verified           Boolean       @default(false)
+  picture                  String?
+  user_note_author         note[]        @relation("note_author_to_user")
+  user_note_subject        note[]        @relation("note_subject_to_user")
+  organization             organization  @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_user_report_manager user_report[] @relation("user_report_manager_to_user")
+  user_user_report_report  user_report[] @relation("user_report_report_to_user")
+
+  @@unique([sub], map: "user_unique_sub")
+  @@index([sub, id], map: "user_sub_id")
+}
+
+model user_report {
+  id                       Int       @id @default(autoincrement())
+  manager_id               Int
+  report_id                Int
+  created_at               DateTime  @default(now()) @db.Timestamp()
+  updated_at               DateTime? @updatedAt @db.Timestamp()
+  user_report_manager_user user      @relation("user_report_manager_to_user", fields: [manager_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_report_report_user  user      @relation("user_report_report_to_user", fields: [report_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([manager_id, report_id], map: "user_report_unique")
+  @@index([manager_id, report_id], map: "user_report_manager_report")
+}
