@@ -70,8 +70,6 @@ userRouter.get(
   validateAccessToken,
   getUserBySubValiadtor,
   async (req: Request, res: Response) => {
-    console.log("GET /user/by-sub/:sub");
-
     const decoded = decodeJWT(req.headers);
     const sub = req.params.sub as string;
 

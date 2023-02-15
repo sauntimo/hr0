@@ -60,7 +60,6 @@ exports.userRouter.patch("/:sub", auth0_middleware_1.validateAccessToken, user_v
     res.status(200).send(result);
 });
 exports.userRouter.get("/by-sub/:sub", auth0_middleware_1.validateAccessToken, user_validators_1.getUserBySubValiadtor, async (req, res) => {
-    console.log("GET /user/by-sub/:sub");
     const decoded = (0, auth0_middleware_1.decodeJWT)(req.headers);
     const sub = req.params.sub;
     if (!sub) {

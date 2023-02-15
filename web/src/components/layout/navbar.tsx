@@ -5,8 +5,6 @@ import { UserProfile } from "../user-profile";
 import { redirecLoginOptions } from "../../utils/auth";
 import { Link } from "react-router-dom";
 import { useStore } from "../..";
-import { callExternalApi } from "../../utils/external-api.service";
-import { CLIENT_ID, DOMAIN, SCOPES, STATE } from "../../config/globals";
 
 export const NavBar: React.FC = () => {
   const navigate = useNavigate();
@@ -32,25 +30,6 @@ export const NavBar: React.FC = () => {
   };
 
   const handleLogin = () => {
-    // console.log(`[${codeChallenge}]`);
-
-    // const params = new URLSearchParams({
-    //   response_type: "code",
-    //   code_challenge: codeChallenge,
-    //   code_challenge_method: "S256",
-    //   client_id: CLIENT_ID,
-    //   redirect_uri: "https://localhost:3000/redirect",
-    //   scope: SCOPES,
-    //   state: STATE,
-    // });
-
-    // const url = `https://${DOMAIN}/authorize?${params.toString()}`;
-
-    // console.log(SCOPES);
-
-    // window.location.href = url;
-
-    // void login();
     void loginWithRedirect(redirecLoginOptions);
   };
 

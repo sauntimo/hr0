@@ -67,12 +67,10 @@ const AccountPage: React.FC = () => {
   }, [getAccessTokenSilently]);
 
   useEffect(() => {
-    if (user || !idToken?.sub) {
+    if (!isAuthenticated || user || !idToken?.sub) {
       return;
     }
     const getUser = async () => {
-      console.log(`${API_URL}/user/by-sub/${idToken?.sub ?? ""}`);
-
       const result = await callExternalApi<user>({
         config: {
           url: `${API_URL}/user/by-sub/${idToken?.sub ?? ""}`,

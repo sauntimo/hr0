@@ -30,8 +30,6 @@ export const createOrganization = async ({
 }: CreateOrganizationParams): Promise<
   ApiResponse<CreateOrganizationResponse>
 > => {
-  console.log("createOrganization service fn");
-
   // Call auth provider and create this org
   const auth0OrgCreateResult = await createAuth0Org({
     name: organizationCreate.org_auth_provider_name,
@@ -82,8 +80,6 @@ export const createOrganization = async ({
       userId,
     },
   });
-
-  console.log(auth0InviteResult);
 
   if (!auth0InviteResult.success) {
     return auth0InviteResult;

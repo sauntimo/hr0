@@ -11,7 +11,6 @@ import LoadingPage from "./pages/loading";
 import InvitePage from "./pages/invite";
 import OrganizationPage from "./pages/organization";
 import NewOrganizationPage from "./pages/new-organization";
-import RedirectPage from "./pages/redirect";
 
 export const App: React.FC = () => {
   const { isLoading } = useAuth0();
@@ -26,7 +25,6 @@ export const App: React.FC = () => {
       <Route path="/" element={<Landing />} />
       <Route path="/new-organization" element={<NewOrganizationPage />} />
       <Route path="/invite" element={<InvitePage />} />
-      <Route path="/redirect" element={<RedirectPage />} />
 
       {/* Protected Routes */}
       <Route
