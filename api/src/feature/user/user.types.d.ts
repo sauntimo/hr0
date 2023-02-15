@@ -4,6 +4,10 @@ export interface GetUserBySubParams {
   sub: string;
 }
 
+export interface GetUserByIdParams {
+  userId: number;
+}
+
 export interface GetUsersByOrgParams {
   org: string;
 }
@@ -12,6 +16,10 @@ export interface CreateUserParams {
   user: UserCreate;
 }
 
-export interface UpdateUserParams {
-  user: UserUpdate;
+export interface UpdateUserBySubParams {
+  user: UserUpdateBySub;
+}
+
+export interface UpdateUserByIdParams {
+  user: UserUpdateById;
 }

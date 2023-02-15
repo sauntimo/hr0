@@ -7,16 +7,13 @@ import {
   AUTH0_MANAGE_API_TOKEN,
 } from "../../config/globals";
 import { AppError } from "../../errors/app-error";
-import {
-  Auth0OrganizationCreate,
-  Auth0OrganizationCreationResponse,
-  Auth0User,
-} from "./auth0.types";
+import { Auth0OrganizationCreationResponse } from "./auth0.types";
 
 interface InviteOrgMemeberParams {
   inviterName: string;
   inviteeEmail: string;
   authProviderOrganizationId: string;
+  app_metadata: { userId: number };
 }
 
 interface InvitiationResponse {
@@ -36,6 +33,7 @@ export const inviteOrgMember = async ({
   inviterName,
   inviteeEmail,
   authProviderOrganizationId,
+  app_metadata,
 }: InviteOrgMemeberParams): Promise<ApiResponse<InvitiationResponse>> => {
   try {
     const result = await axios.request<InvitiationResponse>({
@@ -54,6 +52,7 @@ export const inviteOrgMember = async ({
         ttl_sec: 0, // 7 days
         // roles: ["ROLE_ID", "ROLE_ID", "ROLE_ID"],
         send_invitation_email: true,
+        app_metadata,
       },
     });
 
@@ -159,51 +158,6 @@ export const addMemberToAuth0Org = async ({
     return {
       success: false,
       error: { message: "Failed to add user to Auth0 Organization" },
-    };
-  }
-};
-
-interface CreateAuth0UserParams {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export const createAuth0User = async ({
-  name,
-  email,
-  password,
-}: CreateAuth0UserParams): Promise<ApiResponse<Auth0User>> => {
-  try {
-    const result = await axios.request<Auth0User>({
-      method: "POST",
-      url: `https://${AUTH0_DOMAIN}/api/v2/users`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${AUTH0_MANAGE_API_TOKEN}`,
-        "Cache-Control": "no-cache",
-      },
-      data: {
-        name,
-        email,
-        password,
-        connection: "Username-Password-Authentication",
-      },
-    });
-
-    const { status, data } = result;
-    console.log({ status, data });
-
-    if (status >= 400) {
-      throw new AppError("Auth0 request returned failed");
-    }
-
-    return { success: true, data };
-  } catch (error) {
-    console.error(error);
-    return {
-      success: false,
-      error: { message: "Failed to create new Auth0 User" },
     };
   }
 };

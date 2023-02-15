@@ -6,15 +6,16 @@ import nocache from "nocache";
 import bodyParser from "body-parser";
 import { errorHandler } from "./middleware/error.middleware";
 import { notFoundHandler } from "./middleware/not-found.middleware";
-import { userRouter } from "./feature/user/user.router";
 import { PORT, CLIENT_ORIGIN_URL } from "./config/globals";
 import { errors } from "celebrate";
+
+// Routers
 import { auth0Router } from "./feature/auth0/auth0.router";
+import { userRouter } from "./feature/user/user.router";
+import { organizationRouter } from "./feature/organization/organization.router";
 
 import fs from "fs";
-import http from "http";
 import https from "https";
-import { organizationRouter } from "./feature/organization/organization.router";
 
 const privateKey = fs.readFileSync(
   "/Users/tim.saunders/work/code/sauntimo/hr0/common/keys/localhost-key.pem",
@@ -73,11 +74,10 @@ app.options("*", cors());
 app.use(
   cors({
     origin: CLIENT_ORIGIN_URL,
-    // origin: "http://localhost:3000",
     methods: ["GET,PATCH,POST,DELETE"],
     allowedHeaders: ["Authorization", "Content-Type"],
     maxAge: 86400,
-    credentials: false, //access-control-allow-credentials:true
+    credentials: false,
   })
 );
 
@@ -94,11 +94,8 @@ app.use(errors());
 app.use(errorHandler);
 app.use(notFoundHandler);
 
-// const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
-// httpServer.listen(8080);
-
 httpsServer.listen(PORT, () => {
-  console.log(`🚀 Listening on port ${PORT}`);
+  console.log(`🚀 Listening on port ${PORT}...`);
 });

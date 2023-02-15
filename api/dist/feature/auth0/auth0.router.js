@@ -29,7 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.auth0Router = void 0;
 const express_1 = __importDefault(require("express"));
 const auth0_middleware_1 = require("../../middleware/auth0.middleware");
-const auth0Service = __importStar(require("./auth0.service"));
+const auth0OrganizationService = __importStar(require("./auth0.organization.service"));
 const auth0_validators_1 = require("./auth0.validators");
 exports.auth0Router = express_1.default.Router();
 exports.auth0Router.post("/invite", auth0_middleware_1.validateAccessToken, auth0_validators_1.userInviteValidator, async (req, res) => {
@@ -39,7 +39,7 @@ exports.auth0Router.post("/invite", auth0_middleware_1.validateAccessToken, auth
         return;
     }
     const userInvite = req.body;
-    const result = await auth0Service.inviteOrgMember(Object.assign(Object.assign({}, userInvite), { authProviderOrganizationId: decoded.org_id }));
+    const result = await auth0OrganizationService.inviteOrgMember(Object.assign(Object.assign({}, userInvite), { authProviderOrganizationId: decoded.org_id }));
     if (!result.success) {
         res.status(400).json(result);
         return;

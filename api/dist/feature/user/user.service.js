@@ -24,17 +24,56 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUsersByOrg = exports.getUserBySub = exports.updateUser = exports.createUser = void 0;
+const auth0UserService = __importStar(require("../auth0/auth0.user.service"));
 const userRepository = __importStar(require("./user.repository"));
+const app_error_1 = require("../../errors/app-error");
 const createUser = async ({ user, }) => {
     return userRepository.createUser({ user });
 };
 exports.createUser = createUser;
 const updateUser = async ({ user, }) => {
-    return userRepository.updateUser({ user });
+    return userRepository.updateUserBySub({ user });
 };
 exports.updateUser = updateUser;
 const getUserBySub = async ({ sub, }) => {
-    return userRepository.getUserBySub({ sub });
+    var _a;
+    try {
+        const userBySubResult = await userRepository.getUserBySub({ sub });
+        if (userBySubResult.success) {
+            return userBySubResult;
+        }
+        const auth0UserResult = await auth0UserService.getAuth0User({ sub });
+        if (!auth0UserResult.success) {
+            throw new app_error_1.AppError(auth0UserResult.error.message);
+        }
+        const userIdString = auth0UserResult.data.app_metadata.userId;
+        if (!userIdString) {
+            throw new app_error_1.AppError("Failed to get userId");
+        }
+        const userId = Number(userIdString);
+        const userByIdResult = await userRepository.getUserById({ userId });
+        if (!userByIdResult.success) {
+            throw new app_error_1.AppError(userByIdResult.error.message);
+        }
+        // add the sub to the user
+        const updateResult = await userRepository.updateUserById({
+            user: { id: userId, sub },
+        });
+        const userBySubSecondbResult = await userRepository.getUserBySub({ sub });
+        if (userBySubSecondbResult.success) {
+            return userBySubSecondbResult;
+        }
+        throw new app_error_1.AppError("Failed to get user after update");
+    }
+    catch (error) {
+        if (error instanceof app_error_1.AppError) {
+            return { success: false, error: { message: error.message } };
+        }
+        return {
+            success: false,
+            error: { message: (_a = error === null || error === void 0 ? void 0 : error.toString()) !== null && _a !== void 0 ? _a : "Failed to get user" },
+        };
+    }
 };
 exports.getUserBySub = getUserBySub;
 const getUsersByOrg = async ({ org, }) => {

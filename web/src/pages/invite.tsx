@@ -1,11 +1,8 @@
 import React from "react";
-
 import { useSearchParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import { Layout } from "../components/layout/layout";
-import { redirecLoginOptionsSignup } from "../utils/auth";
-import { useNavigate } from "react-router-dom";
 import { Container } from "../components/layout/container";
 
 interface InviteParams {
@@ -17,7 +14,7 @@ interface InviteParams {
 const InvitePage: React.FC = () => {
   const { loginWithRedirect, loginWithPopup } = useAuth0();
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const paramsKv = Object.fromEntries(searchParams.entries()) as InviteParams;
 
@@ -34,15 +31,10 @@ const InvitePage: React.FC = () => {
 
   const handleCreateAccount = () => {
     void loginWithRedirect({
-      // appState: {
-      //   returnTo: "/redirect",
-      // },
       authorizationParams: {
-        // prompt: "consent",
-        // screen_hint: "signup",
         organization: paramsKv.organization,
         invitation: paramsKv.invitation,
-        useCookiesForTransactions: true,
+        useCookiesForTransactions: false,
       },
     });
   };

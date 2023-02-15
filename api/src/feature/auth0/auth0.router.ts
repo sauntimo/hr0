@@ -5,7 +5,7 @@ import {
   validateAccessToken,
 } from "../../middleware/auth0.middleware";
 
-import * as auth0Service from "./auth0.service";
+import * as auth0OrganizationService from "./auth0.organization.service";
 import { userInviteValidator } from "./auth0.validators";
 
 export const auth0Router = express.Router();
@@ -22,7 +22,7 @@ auth0Router.post(
     }
 
     const userInvite = req.body;
-    const result = await auth0Service.inviteOrgMember({
+    const result = await auth0OrganizationService.inviteOrgMember({
       ...userInvite,
       authProviderOrganizationId: decoded.org_id as string,
     });

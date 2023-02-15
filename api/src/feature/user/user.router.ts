@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 
 import * as userService from "./user.service";
-import type { UserCreate, UserUpdate } from "@commonTypes/user";
+import type { UserCreate, UserUpdateBySub } from "@commonTypes/user";
 
 import {
   getUserBySubValiadtor,
@@ -40,7 +40,7 @@ userRouter.patch(
   "/:sub",
   validateAccessToken,
   patchUserValiadtor,
-  async (req: Request<unknown, unknown, UserUpdate>, res: Response) => {
+  async (req: Request<unknown, unknown, UserUpdateBySub>, res: Response) => {
     const decoded = decodeJWT(req.headers);
 
     const sub = (req.params as GetUserBySubParams).sub as string;

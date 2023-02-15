@@ -1,18 +1,17 @@
 import { ApiResponse } from "@commonTypes/api-response";
 import { organization } from "@prisma/client";
-import {
-  addMemberToAuth0Org,
-  createAuth0Org,
-  createAuth0User,
-  inviteOrgMember,
-} from "../auth0/auth0.service";
 import * as organizationRepository from "./organization.repository";
+import * as userService from "../user/user.service";
 import {
   CreateOrganizationParams,
   CreateOrganizationResponse,
   GetOrganizationByAuthIDParams,
   UpdateOrganizationByAuthIdparams,
 } from "@commonTypes/organization";
+import {
+  createAuth0Org,
+  inviteOrgMember,
+} from "../auth0/auth0.organization.service";
 
 export const getOrganizationByAuthId = async ({
   organizationAuthId,
@@ -43,38 +42,45 @@ export const createOrganization = async ({
     return auth0OrgCreateResult;
   }
 
+  const createResult = await organizationRepository.createOrganization({
+    organizationCreate: {
+      ...organizationCreate,
+      org_id: auth0OrgCreateResult.data.id,
+      user_sub: "", // the user doesn't have a sub yet as they haven't accepted the invitation
+    },
+  });
+
+  if (!createResult.success) {
+    return createResult;
+  }
+
   const {
     id: newOrgId,
     enabled_connections: [{ connection_id }],
   } = auth0OrgCreateResult.data;
 
-  console.log({ newOrgId, connection_id });
+  const usersResult = await userService.getUsersByOrg({ org: newOrgId });
 
-  // // Call auth provider and create a user
-  // const auth0UserCreateResult = await createAuth0User({
-  //   name: organizationCreate.user_name,
-  //   email: organizationCreate.user_email,
-  //   password: organizationCreate.user_password,
-  // });
+  if (!usersResult.success) {
+    return usersResult;
+  }
 
-  // if (!auth0UserCreateResult.success) {
-  //   return auth0UserCreateResult;
-  // }
+  if (usersResult.data.length === 0) {
+    return {
+      success: false,
+      error: { message: "Failed to store or retrieve user in new org" },
+    };
+  }
 
-  // // Call auth provider and add user to org
-  // const auth0AddOrgMemberResult = await addMemberToAuth0Org({
-  //   orgId: auth0OrgCreateResult.data.id,
-  //   userId: auth0UserCreateResult.data.user_id,
-  // });
-
-  // if (!auth0AddOrgMemberResult.success) {
-  //   return auth0AddOrgMemberResult;
-  // }
+  const userId = usersResult.data[0].id;
 
   const auth0InviteResult = await inviteOrgMember({
     inviterName: organizationCreate.user_name,
     inviteeEmail: organizationCreate.user_email,
     authProviderOrganizationId: newOrgId,
+    app_metadata: {
+      userId,
+    },
   });
 
   console.log(auth0InviteResult);
@@ -86,19 +92,6 @@ export const createOrganization = async ({
   const data = {
     invitationUrl: auth0InviteResult.data.invitation_url,
   };
-
-  const createResult = await organizationRepository.createOrganization({
-    organizationCreate: {
-      ...organizationCreate,
-      org_id: auth0OrgCreateResult.data.id,
-      // user_sub: auth0UserCreateResult.data.user_id,
-      user_sub: "",
-    },
-  });
-
-  if (!createResult.success) {
-    return createResult;
-  }
 
   return { success: true, data };
 };

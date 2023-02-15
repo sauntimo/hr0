@@ -8,8 +8,14 @@ export interface UserCreate {
   picture?: string;
 }
 
-// only require sub
-export type UserUpdate = Partial<UserCreate> & {
+interface UserUpdate extends Partial<UserCreate> {
   job_title?: string;
   salary?: numer;
-};
+}
+
+export interface UserUpdateBySub extends UserUpdate {
+  sub: string;
+}
+export interface UserUpdateById extends UserUpdate {
+  id: number;
+}

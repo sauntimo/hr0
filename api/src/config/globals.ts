@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
 export const PORT = process.env.PORT ?? "";
 export const POSTGRES_URL = process.env.POSTGRES_URL ?? "";
 export const PGBOUNCER_URL = process.env.PGBOUNCER_URL ?? "";

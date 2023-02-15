@@ -11,13 +11,14 @@ const nocache_1 = __importDefault(require("nocache"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const error_middleware_1 = require("./middleware/error.middleware");
 const not_found_middleware_1 = require("./middleware/not-found.middleware");
-const user_router_1 = require("./feature/user/user.router");
 const globals_1 = require("./config/globals");
 const celebrate_1 = require("celebrate");
+// Routers
 const auth0_router_1 = require("./feature/auth0/auth0.router");
+const user_router_1 = require("./feature/user/user.router");
+const organization_router_1 = require("./feature/organization/organization.router");
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
-const organization_router_1 = require("./feature/organization/organization.router");
 const privateKey = fs_1.default.readFileSync("/Users/tim.saunders/work/code/sauntimo/hr0/common/keys/localhost-key.pem", "utf8");
 const certificate = fs_1.default.readFileSync("/Users/tim.saunders/work/code/sauntimo/hr0/common/keys/localhost.pem", "utf8");
 const credentials = { key: privateKey, cert: certificate };
@@ -53,11 +54,10 @@ app.use((0, nocache_1.default)());
 app.options("*", (0, cors_1.default)());
 app.use((0, cors_1.default)({
     origin: globals_1.CLIENT_ORIGIN_URL,
-    // origin: "http://localhost:3000",
     methods: ["GET,PATCH,POST,DELETE"],
     allowedHeaders: ["Authorization", "Content-Type"],
     maxAge: 86400,
-    credentials: false, //access-control-allow-credentials:true
+    credentials: false,
 }));
 app.use("/api", apiRouter);
 apiRouter.use("/user", user_router_1.userRouter);
@@ -69,9 +69,7 @@ app.get("/", (req, res, next) => {
 app.use((0, celebrate_1.errors)());
 app.use(error_middleware_1.errorHandler);
 app.use(not_found_middleware_1.notFoundHandler);
-// const httpServer = http.createServer(app);
 const httpsServer = https_1.default.createServer(credentials, app);
-// httpServer.listen(8080);
 httpsServer.listen(globals_1.PORT, () => {
-    console.log(`🚀 Listening on port ${globals_1.PORT}`);
+    console.log(`🚀 Listening on port ${globals_1.PORT}...`);
 });

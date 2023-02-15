@@ -1,4 +1,4 @@
-import { UserCreate, UserUpdate } from "@commonTypes/user";
+import { UserCreate, UserUpdateBySub } from "@commonTypes/user";
 import { celebrate, Joi, Segments } from "celebrate";
 import { GetUserBySubParams, GetUsersByOrgParams } from "./user.types";
 
@@ -24,7 +24,7 @@ export const getUserBySubValiadtor = celebrate<unknown, unknown, UserCreate>({
   [Segments.PARAMS]: getUserBySubSchema,
 });
 
-const userUpdateSchema = Joi.object<UserUpdate>().keys({
+const userUpdateSchema = Joi.object<UserUpdateBySub>().keys({
   name: Joi.string(),
   sub: Joi.string(),
   email: Joi.string(),
@@ -36,7 +36,7 @@ const userUpdateSchema = Joi.object<UserUpdate>().keys({
   salary: Joi.number(),
 });
 
-export const patchUserValiadtor = celebrate<unknown, unknown, UserUpdate>({
+export const patchUserValiadtor = celebrate<unknown, unknown, UserUpdateBySub>({
   [Segments.PARAMS]: getUserBySubSchema,
   [Segments.BODY]: userUpdateSchema,
 });

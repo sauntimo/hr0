@@ -1,6 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 
 import { Container } from "../components/layout/container";
 import { Layout } from "../components/layout/layout";
@@ -16,9 +15,9 @@ import { Card } from "../components/layout/card";
 const AccountPage: React.FC = () => {
   const {
     user: auth0User,
-    getAccessTokenSilently,
+    isAuthenticated,
     getIdTokenClaims,
-    handleRedirectCallback,
+    getAccessTokenSilently,
   } = useAuth0();
 
   const [error, setError] = useState<string | null>(null);
@@ -32,21 +31,10 @@ const AccountPage: React.FC = () => {
     state.accessToken,
     state.setAccessToken,
   ]);
-  const [scopes, setScopes] = useStore((state) => [
-    state.scopes,
-    state.setScopes,
-  ]);
-
-  const [searchParams] = useSearchParams();
-
-  // const authorizationCode = searchParams.get("code");
-
-  // if (authorizationCode) {
-  //   void handleRedirectCallback();
-  // }
+  const [, setScopes] = useStore((state) => [state.scopes, state.setScopes]);
 
   useEffect(() => {
-    if (accessToken && idToken) {
+    if (!isAuthenticated || (accessToken && idToken)) {
       return;
     }
 

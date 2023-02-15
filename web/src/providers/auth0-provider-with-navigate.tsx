@@ -21,6 +21,7 @@ export const Auth0ProviderWithNavigate = ({
   const navigate = useNavigate();
 
   const onRedirectCallback = (appState?: AppState) => {
+    console.log("Tim's custom onRedirectCallBack");
     void navigate(appState?.returnTo || window.location.pathname);
   };
 
@@ -33,10 +34,9 @@ export const Auth0ProviderWithNavigate = ({
         scope: SCOPES,
         clientID: CLIENT_ID,
         prompt: "consent",
-        // scope: "openid profile email offline-access invite-org-members",
         redirect_uri: CALLBACK_URL,
-        // redirect_uri: "https://localhost:3000/redirect",
-        useCookiesForTransactions: true,
+        useCookiesForTransactions: false,
+        useRefreshTokens: true,
       }}
       onRedirectCallback={onRedirectCallback}
     >
