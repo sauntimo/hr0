@@ -11,6 +11,7 @@ import LoadingPage from "./pages/loading";
 import InvitePage from "./pages/invite";
 import OrganizationPage from "./pages/organization";
 import NewOrganizationPage from "./pages/new-organization";
+import ProfilePage from "./pages/profile";
 
 export const App: React.FC = () => {
   const { isLoading } = useAuth0();
@@ -34,7 +35,7 @@ export const App: React.FC = () => {
       />
       <Route
         path="/profile/:userId"
-        element={<AuthenticationGuard component={AccountPage} />}
+        element={<AuthenticationGuard component={ProfilePage} />}
       />
       <Route
         path="/organization"
