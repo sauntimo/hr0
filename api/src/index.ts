@@ -18,11 +18,11 @@ import fs from "fs";
 import https from "https";
 
 const privateKey = fs.readFileSync(
-  "/Users/tim.saunders/work/code/sauntimo/hr0/common/keys/localhost-key.pem",
+  "/Users/tim.saunders/work/code/localhost+1-key.pem",
   "utf8"
 );
 const certificate = fs.readFileSync(
-  "/Users/tim.saunders/work/code/sauntimo/hr0/common/keys/localhost.pem",
+  "/Users/tim.saunders/work/code/localhost+1.pem",
   "utf8"
 );
 

@@ -32,7 +32,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "dev": "HTTPS=true SSL_CRT_FILE=/Users/tim.saunders/work/code/sauntimo/hr0/common/keys/localhost.pem SSL_KEY_FILE=/Users/tim.saunders/work/code/sauntimo/hr0/common/keys/localhost-key.pem react-scripts start",
+    "dev": "HTTPS=true SSL_CRT_FILE=/Users/tim.saunders/work/code/localhost+1.pem SSL_KEY_FILE=/Users/tim.saunders/work/code/localhost+1-key.pem react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
