@@ -62,13 +62,26 @@ exports.userRouter.patch("/:sub", auth0_middleware_1.validateAccessToken, user_v
 exports.userRouter.get("/by-sub/:sub", auth0_middleware_1.validateAccessToken, user_validators_1.getUserBySubValiadtor, async (req, res) => {
     const decoded = (0, auth0_middleware_1.decodeJWT)(req.headers);
     const sub = req.params.sub;
-    if (!sub) {
-        throw new app_error_1.AppError("Invalid sub provided");
-    }
     if ((decoded === null || decoded === void 0 ? void 0 : decoded.sub) !== sub) {
         throw new app_error_1.AppError("Unauthorized");
     }
-    const result = await userService.getUserBySub({ sub });
+    const result = await userService.getUserBySub({
+        sub,
+        orgAuthProviderId: decoded.org_id,
+    });
+    if (!result.success) {
+        res.status(400).json(result);
+        return;
+    }
+    res.status(200).json(result);
+});
+exports.userRouter.get("/by-id/:userId", auth0_middleware_1.validateAccessToken, user_validators_1.getUserByIdValiadtor, async (req, res) => {
+    const decoded = (0, auth0_middleware_1.decodeJWT)(req.headers);
+    const userId = Number(req.params.userId);
+    const result = await userService.getUserById({
+        userId,
+        orgAuthProviderId: decoded === null || decoded === void 0 ? void 0 : decoded.org_id,
+    });
     if (!result.success) {
         res.status(400).json(result);
         return;

@@ -1,7 +1,7 @@
 import type { organization } from "@prismaTypes/index";
 import { callExternalApi } from "../../utils/external-api.service";
 import { API_URL } from "../../config/globals";
-import { useStore } from "../..";
+import { useStore } from "../../state/app-state";
 import { Card } from "../layout/card";
 import type { CustomFormField } from "./custom-form";
 import { CustomForm } from "./custom-form";

@@ -8,6 +8,7 @@ import {
   patchUserValiadtor,
   postUserValiadtor,
   getUsersByOrgValiadtor,
+  getUserByIdValiadtor,
 } from "./user.validators";
 import {
   decodeJWT,
@@ -15,7 +16,7 @@ import {
 } from "../../middleware/auth0.middleware";
 import { AppError } from "../../errors/app-error";
 import { UnauthorizedError } from "express-oauth2-jwt-bearer";
-import { GetUserBySubParams } from "./user.types";
+import { GetUserBySubParams } from "./user.repository";
 
 export const userRouter = express.Router();
 
@@ -73,15 +74,36 @@ userRouter.get(
     const decoded = decodeJWT(req.headers);
     const sub = req.params.sub as string;
 
-    if (!sub) {
-      throw new AppError("Invalid sub provided");
-    }
-
     if (decoded?.sub !== sub) {
       throw new AppError("Unauthorized");
     }
 
-    const result = await userService.getUserBySub({ sub });
+    const result = await userService.getUserBySub({
+      sub,
+      orgAuthProviderId: decoded.org_id,
+    });
+
+    if (!result.success) {
+      res.status(400).json(result);
+      return;
+    }
+
+    res.status(200).json(result);
+  }
+);
+
+userRouter.get(
+  "/by-id/:userId",
+  validateAccessToken,
+  getUserByIdValiadtor,
+  async (req: Request, res: Response) => {
+    const decoded = decodeJWT(req.headers);
+    const userId = Number(req.params.userId);
+
+    const result = await userService.getUserById({
+      userId,
+      orgAuthProviderId: decoded?.org_id,
+    });
 
     if (!result.success) {
       res.status(400).json(result);

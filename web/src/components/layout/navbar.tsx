@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import { UserProfile } from "../user-profile";
 import { redirecLoginOptions } from "../../utils/auth";
 import { Link } from "react-router-dom";
-import { useStore } from "../..";
+import { useStore } from "../../state/app-state";
+import { BreadcrumbContext } from "../../hooks/useBreadcrumbs";
 
 export const NavBar: React.FC = () => {
   const navigate = useNavigate();
@@ -42,6 +43,8 @@ export const NavBar: React.FC = () => {
     });
   };
 
+  const { breadcrumbs } = useContext(BreadcrumbContext);
+
   return (
     <nav className="navbar sticky top-0 bg-base-100 shadow-md">
       <div className="flex-1">
@@ -49,6 +52,21 @@ export const NavBar: React.FC = () => {
           hr0
         </Link>
       </div>
+      {breadcrumbs.length > 1 && (
+        <div className="breadcrumbs text-sm">
+          <ul>
+            {breadcrumbs.map((breadcrumb) => (
+              <li key={breadcrumb.to} className="capitalize">
+                {breadcrumb.link ? (
+                  <Link to={breadcrumb.to}>{breadcrumb.text}</Link>
+                ) : (
+                  breadcrumb.text
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div className="navbar-end space-x-2">
         {isAuthenticated && (
           <UserProfile

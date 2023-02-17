@@ -4,7 +4,7 @@ import { ApiResponse } from "@commonTypes/api-response";
 import { user } from "@prisma/client";
 import {
   CreateUserParams,
-  GetUserBySubParams,
+  GetUserByIdParams,
   GetUsersByOrgParams,
   UpdateUserBySubParams,
 } from "./user.types";
@@ -22,8 +22,14 @@ export const updateUser = async ({
   return userRepository.updateUserBySub({ user });
 };
 
+export interface GetUserBySubParams {
+  sub: string;
+  orgAuthProviderId: string;
+}
+
 export const getUserBySub = async ({
   sub,
+  orgAuthProviderId,
 }: GetUserBySubParams): Promise<ApiResponse<user>> => {
   try {
     const userBySubResult = await userRepository.getUserBySub({ sub });
@@ -46,7 +52,10 @@ export const getUserBySub = async ({
 
     const userId = Number(userIdString);
 
-    const userByIdResult = await userRepository.getUserById({ userId });
+    const userByIdResult = await userRepository.getUserById({
+      userId,
+      orgAuthProviderId,
+    });
 
     if (!userByIdResult.success) {
       throw new AppError(userByIdResult.error.message);
@@ -74,6 +83,13 @@ export const getUserBySub = async ({
       error: { message: error?.toString() ?? "Failed to get user" },
     };
   }
+};
+
+export const getUserById = async ({
+  userId,
+  orgAuthProviderId,
+}: GetUserByIdParams): Promise<ApiResponse<user>> => {
+  return userRepository.getUserById({ userId, orgAuthProviderId });
 };
 
 export const getUsersByOrg = async ({

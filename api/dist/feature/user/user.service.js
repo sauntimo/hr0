@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUsersByOrg = exports.getUserBySub = exports.updateUser = exports.createUser = void 0;
+exports.getUsersByOrg = exports.getUserById = exports.getUserBySub = exports.updateUser = exports.createUser = void 0;
 const auth0UserService = __importStar(require("../auth0/auth0.user.service"));
 const userRepository = __importStar(require("./user.repository"));
 const app_error_1 = require("../../errors/app-error");
@@ -35,7 +35,7 @@ const updateUser = async ({ user, }) => {
     return userRepository.updateUserBySub({ user });
 };
 exports.updateUser = updateUser;
-const getUserBySub = async ({ sub, }) => {
+const getUserBySub = async ({ sub, orgAuthProviderId, }) => {
     var _a;
     try {
         const userBySubResult = await userRepository.getUserBySub({ sub });
@@ -51,7 +51,10 @@ const getUserBySub = async ({ sub, }) => {
             throw new app_error_1.AppError("Failed to get userId");
         }
         const userId = Number(userIdString);
-        const userByIdResult = await userRepository.getUserById({ userId });
+        const userByIdResult = await userRepository.getUserById({
+            userId,
+            orgAuthProviderId,
+        });
         if (!userByIdResult.success) {
             throw new app_error_1.AppError(userByIdResult.error.message);
         }
@@ -76,6 +79,10 @@ const getUserBySub = async ({ sub, }) => {
     }
 };
 exports.getUserBySub = getUserBySub;
+const getUserById = async ({ userId, orgAuthProviderId, }) => {
+    return userRepository.getUserById({ userId, orgAuthProviderId });
+};
+exports.getUserById = getUserById;
 const getUsersByOrg = async ({ org, }) => {
     return userRepository.getUsersByOrg({ org });
 };

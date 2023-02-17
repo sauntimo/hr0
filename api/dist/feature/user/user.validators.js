@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUsersByOrgValiadtor = exports.patchUserValiadtor = exports.getUserBySubValiadtor = exports.postUserValiadtor = void 0;
+exports.getUsersByOrgValiadtor = exports.patchUserValiadtor = exports.getUserByIdValiadtor = exports.getUserBySubValiadtor = exports.postUserValiadtor = void 0;
 const celebrate_1 = require("celebrate");
 const userCreateSchema = celebrate_1.Joi.object().keys({
     name: celebrate_1.Joi.string().required(),
@@ -19,6 +19,12 @@ const getUserBySubSchema = celebrate_1.Joi.object().keys({
 });
 exports.getUserBySubValiadtor = (0, celebrate_1.celebrate)({
     [celebrate_1.Segments.PARAMS]: getUserBySubSchema,
+});
+const getUserByIdSchema = celebrate_1.Joi.object().keys({
+    userId: celebrate_1.Joi.number().required(),
+});
+exports.getUserByIdValiadtor = (0, celebrate_1.celebrate)({
+    [celebrate_1.Segments.PARAMS]: getUserByIdSchema,
 });
 const userUpdateSchema = celebrate_1.Joi.object().keys({
     name: celebrate_1.Joi.string(),

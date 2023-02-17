@@ -1,11 +1,8 @@
 import { UserCreate, UserUpdate } from "@commonTypes/user";
 
-export interface GetUserBySubParams {
-  sub: string;
-}
-
 export interface GetUserByIdParams {
   userId: number;
+  orgAuthProviderId: string;
 }
 
 export interface GetUsersByOrgParams {

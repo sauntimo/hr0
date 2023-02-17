@@ -11,9 +11,9 @@ export type CustomFormField = TextInputProps & {
 };
 
 interface CustomFormProps<T> {
-  onSubmit: (data: T) => Promise<boolean>;
+  onSubmit?: (data: T) => Promise<boolean>;
   fields: CustomFormField[];
-  submitValue: string;
+  submitValue?: string;
 }
 
 export const CustomForm = <T extends FieldValues>({
@@ -42,7 +42,7 @@ export const CustomForm = <T extends FieldValues>({
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={onSubmit && handleSubmit(onSubmit)}
       className=" flex flex-col space-y-4"
     >
       <>
@@ -54,12 +54,14 @@ export const CustomForm = <T extends FieldValues>({
             state={!isSubmitted ? null : isError ? "error" : "success"}
           />
         ))}
-        <input
-          className="btn-outline btn-secondary btn mt-4"
-          type="submit"
-          disabled={isError}
-          value={submitValue}
-        />
+        {submitValue && (
+          <input
+            className="btn-outline btn-secondary btn mt-4"
+            type="submit"
+            disabled={isError}
+            value={submitValue}
+          />
+        )}
         {errors.root?.message && <p>{errors.root.message}</p>}
       </>
     </form>

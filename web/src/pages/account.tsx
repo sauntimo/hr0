@@ -9,7 +9,7 @@ import type { user } from "@prismaTypes/index";
 import type { IdTokenWithSub } from "../types/jwt";
 import { UserAccountForm } from "../components/forms/user-account-form";
 import { Link } from "react-router-dom";
-import { useStore } from "..";
+import { useStore } from "../state/app-state";
 import { Card } from "../components/layout/card";
 
 const AccountPage: React.FC = () => {

@@ -5,11 +5,14 @@ import { user } from "@prisma/client";
 import {
   CreateUserParams,
   GetUserByIdParams,
-  GetUserBySubParams,
   GetUsersByOrgParams,
   UpdateUserByIdParams,
   UpdateUserBySubParams,
 } from "./user.types";
+
+/**********
+ * CREATE *
+ **********/
 
 export const createUser = async ({
   user,
@@ -35,6 +38,86 @@ export const createUser = async ({
     return { success: false, error: { message: "User create failed" } };
   }
 };
+
+/********
+ * READ *
+ ********/
+
+export interface GetUserBySubParams {
+  sub: string;
+}
+
+export const getUserBySub = async ({
+  sub,
+}: GetUserBySubParams): Promise<ApiResponse<user>> => {
+  try {
+    const result = await prisma.user.findUnique({
+      where: { sub },
+    });
+
+    if (!result) {
+      throw new AppError("User not found");
+    }
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: { message: "Failed to get user" } };
+  }
+};
+
+export const getUserById = async ({
+  userId,
+  orgAuthProviderId,
+}: GetUserByIdParams): Promise<ApiResponse<user>> => {
+  console.log({
+    userId,
+    orgAuthProviderId,
+  });
+
+  try {
+    // although only want one, have to use find many to use org criteria
+    // for security so users can only get other users in their org
+    const result = await prisma.user.findMany({
+      where: {
+        id: userId,
+        organization: { auth_provider_id: orgAuthProviderId },
+      },
+    });
+
+    if (!result || result.length === 0) {
+      throw new AppError("User not found");
+    }
+
+    return { success: true, data: result[0] };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: { message: "Failed to get user" } };
+  }
+};
+
+export const getUsersByOrg = async ({
+  org,
+}: GetUsersByOrgParams): Promise<ApiResponse<user[]>> => {
+  try {
+    const result = await prisma.user.findMany({
+      where: { organization: { auth_provider_id: org } },
+    });
+
+    if (!result) {
+      throw new AppError("No users found");
+    }
+
+    return { success: true, data: result };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: { message: "Failed to get users" } };
+  }
+};
+
+/**********
+ * UPDATE *
+ **********/
 
 export const updateUserBySub = async ({
   user,
@@ -65,62 +148,5 @@ export const updateUserById = async ({
   } catch (error) {
     console.error(error);
     return { success: false, error: { message: "User update failed" } };
-  }
-};
-
-export const getUserBySub = async ({
-  sub,
-}: GetUserBySubParams): Promise<ApiResponse<user>> => {
-  try {
-    const result = await prisma.user.findUnique({
-      where: { sub },
-    });
-
-    if (!result) {
-      throw new AppError("User not found");
-    }
-
-    return { success: true, data: result };
-  } catch (error) {
-    console.error(error);
-    return { success: false, error: { message: "Failed to get user" } };
-  }
-};
-
-export const getUserById = async ({
-  userId,
-}: GetUserByIdParams): Promise<ApiResponse<user>> => {
-  try {
-    const result = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!result) {
-      throw new AppError("User not found");
-    }
-
-    return { success: true, data: result };
-  } catch (error) {
-    console.error(error);
-    return { success: false, error: { message: "Failed to get user" } };
-  }
-};
-
-export const getUsersByOrg = async ({
-  org,
-}: GetUsersByOrgParams): Promise<ApiResponse<user[]>> => {
-  try {
-    const result = await prisma.user.findMany({
-      where: { organization: { auth_provider_id: org } },
-    });
-
-    if (!result) {
-      throw new AppError("No users found");
-    }
-
-    return { success: true, data: result };
-  } catch (error) {
-    console.error(error);
-    return { success: false, error: { message: "Failed to get users" } };
   }
 };

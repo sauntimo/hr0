@@ -1,6 +1,7 @@
 import { UserCreate, UserUpdateBySub } from "@commonTypes/user";
 import { celebrate, Joi, Segments } from "celebrate";
-import { GetUserBySubParams, GetUsersByOrgParams } from "./user.types";
+import { GetUserBySubParams } from "./user.repository";
+import { GetUserByIdParams, GetUsersByOrgParams } from "./user.types";
 
 const userCreateSchema = Joi.object<UserCreate>().keys({
   name: Joi.string().required(),
@@ -22,6 +23,14 @@ const getUserBySubSchema = Joi.object<GetUserBySubParams>().keys({
 
 export const getUserBySubValiadtor = celebrate<unknown, unknown, UserCreate>({
   [Segments.PARAMS]: getUserBySubSchema,
+});
+
+const getUserByIdSchema = Joi.object<GetUserByIdParams>().keys({
+  userId: Joi.number().required(),
+});
+
+export const getUserByIdValiadtor = celebrate<unknown, unknown, UserCreate>({
+  [Segments.PARAMS]: getUserByIdSchema,
 });
 
 const userUpdateSchema = Joi.object<UserUpdateBySub>().keys({
