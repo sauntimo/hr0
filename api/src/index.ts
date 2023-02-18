@@ -20,7 +20,7 @@ import { ManagementClient } from "auth0";
 import { auth0Router } from "./feature/auth0/auth0.router";
 import { userRouter } from "./feature/user/user.router";
 import { organizationRouter } from "./feature/organization/organization.router";
-import { adminRouter } from "./feature/auth0/admin/admin";
+import { adminRouter } from "./feature/admin/admin";
 
 import fs from "fs";
 import https from "https";

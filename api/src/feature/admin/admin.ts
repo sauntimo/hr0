@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import { auth0ManagementClient } from "../../..";
-import { prisma } from "../../../db/prisma";
+import { auth0ManagementClient } from "../..";
+import { prisma } from "../../db/prisma";
 
 export const adminRouter = express.Router();
 
