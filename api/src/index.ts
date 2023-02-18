@@ -6,8 +6,18 @@ import nocache from "nocache";
 import bodyParser from "body-parser";
 import { errorHandler } from "./middleware/error.middleware";
 import { notFoundHandler } from "./middleware/not-found.middleware";
-import { PORT, CLIENT_ORIGIN_URL } from "./config/globals";
+import {
+  PORT,
+  CLIENT_ORIGIN_URL,
+  AUTH0_DOMAIN,
+  AUTH0_CLIENT_ID,
+  AUTH0_CLIENT_SECRET,
+  AUTH0_AUDIENCE,
+  AUTH0_M2M_CLIENT_SECRET,
+  AUTH0_M2M_CLIENT_ID,
+} from "./config/globals";
 import { errors } from "celebrate";
+import { ManagementClient } from "auth0";
 
 // Routers
 import { auth0Router } from "./feature/auth0/auth0.router";
@@ -29,6 +39,12 @@ const certificate = fs.readFileSync(
 const credentials = { key: privateKey, cert: certificate };
 
 dotenv.config();
+
+export const auth0ManagementClient = new ManagementClient({
+  domain: AUTH0_DOMAIN,
+  clientId: AUTH0_M2M_CLIENT_ID,
+  clientSecret: AUTH0_M2M_CLIENT_SECRET,
+});
 
 const app: Express = express();
 

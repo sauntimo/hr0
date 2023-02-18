@@ -1,13 +1,13 @@
 import { ApiResponse } from "@commonTypes/api-response";
+import { Organization, OrganizationInvitation } from "auth0";
 import axios from "axios";
+import { auth0ManagementClient } from "../..";
 import {
   AUTH0_CLIENT_ID,
   AUTH0_CONNECTION_ID,
   AUTH0_DOMAIN,
-  AUTH0_MANAGE_API_TOKEN,
 } from "../../config/globals";
 import { AppError } from "../../errors/app-error";
-import { Auth0OrganizationCreationResponse } from "./auth0.types";
 
 interface InviteOrgMemeberParams {
   inviterName: string;
@@ -34,17 +34,11 @@ export const inviteOrgMember = async ({
   inviteeEmail,
   authProviderOrganizationId,
   app_metadata,
-}: InviteOrgMemeberParams): Promise<ApiResponse<InvitiationResponse>> => {
+}: InviteOrgMemeberParams): Promise<ApiResponse<OrganizationInvitation>> => {
   try {
-    const result = await axios.request<InvitiationResponse>({
-      method: "POST",
-      url: `https://${AUTH0_DOMAIN}/api/v2/organizations/${authProviderOrganizationId}/invitations`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${AUTH0_MANAGE_API_TOKEN}`,
-        "Cache-Control": "no-cache",
-      },
-      data: {
+    const result = await auth0ManagementClient.organizations.createInvitation(
+      { id: authProviderOrganizationId },
+      {
         inviter: { name: inviterName },
         invitee: { email: inviteeEmail },
         client_id: AUTH0_CLIENT_ID,
@@ -53,18 +47,13 @@ export const inviteOrgMember = async ({
         // roles: ["ROLE_ID", "ROLE_ID", "ROLE_ID"],
         send_invitation_email: true,
         app_metadata,
-      },
-    });
+      }
+    );
 
-    const { status, data } = result;
-    console.log({ status, data });
-
-    if (status >= 400) {
-      throw new AppError("Auth0 request returned failed");
-    }
-
-    return { success: true, data };
+    return { success: true, data: result };
   } catch (error) {
+    console.error(error);
+
     return {
       success: false,
       error: { message: "Failed to invite organization member" },
@@ -80,38 +69,22 @@ interface CreateAuth0OrgParams {
 export const createAuth0Org = async ({
   name,
   display_name,
-}: CreateAuth0OrgParams): Promise<
-  ApiResponse<Auth0OrganizationCreationResponse>
-> => {
+}: CreateAuth0OrgParams): Promise<ApiResponse<Organization>> => {
   try {
-    const result = await axios.request<Auth0OrganizationCreationResponse>({
-      method: "POST",
-      url: `https://${AUTH0_DOMAIN}/api/v2/organizations`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${AUTH0_MANAGE_API_TOKEN}`,
-        "Cache-Control": "no-cache",
-      },
-      data: {
-        name,
-        display_name,
-        enabled_connections: [
-          {
-            connection_id: AUTH0_CONNECTION_ID,
-            assign_membership_on_login: false,
-          },
-        ],
-      },
+    const createResult = await auth0ManagementClient.organizations.create({
+      name,
+      display_name,
     });
 
-    const { status, data } = result;
-    console.log({ status, data });
+    await auth0ManagementClient.organizations.addEnabledConnection(
+      { id: createResult.id },
+      {
+        connection_id: AUTH0_CONNECTION_ID,
+        assign_membership_on_login: false,
+      }
+    );
 
-    if (status >= 400) {
-      throw new AppError("Auth0 request returned failed");
-    }
-
-    return { success: true, data };
+    return { success: true, data: createResult };
   } catch (error) {
     console.error(error);
 
@@ -122,42 +95,44 @@ export const createAuth0Org = async ({
   }
 };
 
-interface AddMemberToAuth0OrgParams {
-  orgId: string;
-  userId: string;
-}
+// interface AddMemberToAuth0OrgParams {
+//   orgId: string;
+//   userId: string;
+//   AUTH0_MANAGE_API_TOKEN: string;
+// }
 
-export const addMemberToAuth0Org = async ({
-  orgId,
-  userId,
-}: AddMemberToAuth0OrgParams): Promise<ApiResponse> => {
-  try {
-    const result = await axios.request({
-      method: "POST",
-      url: `https://${AUTH0_DOMAIN}/api/v2/organizations/${orgId}/members`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${AUTH0_MANAGE_API_TOKEN}`,
-        "Cache-Control": "no-cache",
-      },
-      data: {
-        members: [userId],
-      },
-    });
+// export const addMemberToAuth0Org = async ({
+//   orgId,
+//   userId,
+//   AUTH0_MANAGE_API_TOKEN,
+// }: AddMemberToAuth0OrgParams): Promise<ApiResponse> => {
+//   try {
+//     const result = await axios.request({
+//       method: "POST",
+//       url: `https://${AUTH0_DOMAIN}/api/v2/organizations/${orgId}/members`,
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${AUTH0_MANAGE_API_TOKEN}`,
+//         "Cache-Control": "no-cache",
+//       },
+//       data: {
+//         members: [userId],
+//       },
+//     });
 
-    const { status, data } = result;
-    console.log({ status, data });
+//     const { status, data } = result;
+//     console.log({ status, data });
 
-    if (status >= 400) {
-      throw new AppError("Auth0 request returned failed");
-    }
+//     if (status >= 400) {
+//       throw new AppError("Auth0 request returned failed");
+//     }
 
-    return { success: true };
-  } catch (error) {
-    console.error(error);
-    return {
-      success: false,
-      error: { message: "Failed to add user to Auth0 Organization" },
-    };
-  }
-};
+//     return { success: true };
+//   } catch (error) {
+//     console.error(error);
+//     return {
+//       success: false,
+//       error: { message: "Failed to add user to Auth0 Organization" },
+//     };
+//   }
+// };

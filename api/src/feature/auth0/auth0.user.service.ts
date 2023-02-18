@@ -1,8 +1,6 @@
 import { ApiResponse } from "@commonTypes/api-response";
-import axios from "axios";
-import { AUTH0_DOMAIN, AUTH0_MANAGE_API_TOKEN } from "../../config/globals";
-import { AppError } from "../../errors/app-error";
-import { Auth0User } from "./auth0.types";
+import { AppMetadata, User, UserMetadata } from "auth0";
+import { auth0ManagementClient } from "../..";
 
 interface CreateAuth0UserParams {
   name: string;
@@ -14,32 +12,20 @@ export const createAuth0User = async ({
   name,
   email,
   password,
-}: CreateAuth0UserParams): Promise<ApiResponse<Auth0User>> => {
+}: CreateAuth0UserParams): Promise<
+  ApiResponse<User<AppMetadata, UserMetadata>>
+> => {
   try {
-    const result = await axios.request<Auth0User>({
-      method: "POST",
-      url: `https://${AUTH0_DOMAIN}/api/v2/users`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${AUTH0_MANAGE_API_TOKEN}`,
-        "Cache-Control": "no-cache",
-      },
-      data: {
-        name,
-        email,
-        password,
-        connection: "Username-Password-Authentication",
-      },
+    const result = await auth0ManagementClient.createUser({
+      name,
+      email,
+      password,
+      connection: "Username-Password-Authentication",
     });
 
-    const { status, data } = result;
-    console.log({ status, data });
+    console.log(result);
 
-    if (status >= 400) {
-      throw new AppError("Auth0 request returned failed");
-    }
-
-    return { success: true, data };
+    return { success: true, data: result };
   } catch (error) {
     console.error(error);
     return {
@@ -55,26 +41,15 @@ interface GetAuth0UserParams {
 
 export const getAuth0User = async ({
   sub,
-}: GetAuth0UserParams): Promise<ApiResponse<Auth0User>> => {
+}: GetAuth0UserParams): Promise<
+  ApiResponse<User<AppMetadata, UserMetadata>>
+> => {
   try {
-    const result = await axios.request<Auth0User>({
-      method: "GET",
-      url: `https://${AUTH0_DOMAIN}/api/v2/users/${sub}`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${AUTH0_MANAGE_API_TOKEN}`,
-        "Cache-Control": "no-cache",
-      },
+    const result = await auth0ManagementClient.getUser({
+      id: sub,
     });
 
-    const { status, data } = result;
-    console.log({ status, data });
-
-    if (status >= 400) {
-      throw new AppError("Auth0 request returned failed");
-    }
-
-    return { success: true, data };
+    return { success: true, data: result };
   } catch (error) {
     console.error(error);
     return {

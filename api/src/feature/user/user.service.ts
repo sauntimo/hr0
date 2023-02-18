@@ -38,13 +38,15 @@ export const getUserBySub = async ({
       return userBySubResult;
     }
 
-    const auth0UserResult = await auth0UserService.getAuth0User({ sub });
+    const auth0UserResult = await auth0UserService.getAuth0User({
+      sub,
+    });
 
     if (!auth0UserResult.success) {
       throw new AppError(auth0UserResult.error.message);
     }
 
-    const userIdString = auth0UserResult.data.app_metadata.userId;
+    const userIdString = auth0UserResult.data.app_metadata?.userId;
 
     if (!userIdString) {
       throw new AppError("Failed to get userId");

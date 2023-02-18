@@ -52,10 +52,7 @@ export const createOrganization = async ({
     return createResult;
   }
 
-  const {
-    id: newOrgId,
-    enabled_connections: [{ connection_id }],
-  } = auth0OrgCreateResult.data;
+  const { id: newOrgId } = auth0OrgCreateResult.data;
 
   const usersResult = await userService.getUsersByOrg({ org: newOrgId });
 
