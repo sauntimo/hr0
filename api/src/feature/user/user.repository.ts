@@ -70,11 +70,6 @@ export const getUserById = async ({
   userId,
   orgAuthProviderId,
 }: GetUserByIdParams): Promise<ApiResponse<user>> => {
-  console.log({
-    userId,
-    orgAuthProviderId,
-  });
-
   try {
     // although only want one, have to use find many to use org criteria
     // for security so users can only get other users in their org

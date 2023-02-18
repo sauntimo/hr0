@@ -43,12 +43,18 @@ export const OrganizationForm: React.FC = () => {
   const fields: CustomFormField[] = [
     {
       initialValue: organization.name,
-      label: "Organization Name",
+      label: "Organization name",
       fieldName: "name",
     },
     {
+      initialValue: organization.auth_provider_name,
+      label: "Auth provider identifier",
+      fieldName: "auth_provider_name",
+      editable: false,
+    },
+    {
       initialValue: organization.auth_provider_id,
-      label: "Auth Provider ID",
+      label: "Auth provider ID",
       fieldName: "auth_provider_id",
       editable: false,
     },

@@ -66,9 +66,9 @@ const ProfilePage: React.FC = () => {
         text: organization?.name ?? "organization",
         link: true,
       },
-      { to: "", text: profileUser.name, link: false },
+      { to: "", text: profileUser?.name, link: false },
     ]);
-  }, []);
+  }, [profileUser]);
 
   if (!profileUser) {
     return <LoadingPage />;
@@ -76,19 +76,19 @@ const ProfilePage: React.FC = () => {
 
   const fields: CustomFormField[] = [
     {
-      initialValue: profileUser.name,
+      initialValue: profileUser?.name,
       label: "Name",
       fieldName: "name",
       editable: false,
     },
     {
-      initialValue: profileUser.email,
+      initialValue: profileUser?.email,
       label: "Email Address",
       fieldName: "email",
       editable: false,
     },
     {
-      initialValue: profileUser.job_title,
+      initialValue: profileUser?.job_title,
       label: "Job Title",
       fieldName: "job_title",
       editable: false,
@@ -97,7 +97,7 @@ const ProfilePage: React.FC = () => {
 
   if (false) {
     fields.push({
-      initialValue: profileUser.salary,
+      initialValue: profileUser?.salary,
       label: "Salary",
       fieldName: "salary",
       editable: false,

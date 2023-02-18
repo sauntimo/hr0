@@ -39,17 +39,6 @@ const NewOrganizationPage: React.FC = () => {
 
     if (result.success) {
       window.location.href = result.data.invitationUrl;
-      // void loginWithRedirect({
-      //   appState: {
-      //     returnTo: "/account",
-      //   },
-      //   authorizationParams: {
-      //     prompt: "consent",
-      //     screen_hint: "signin",
-      //     scope: SCOPES,
-      //     organization: organizationCreate.org_auth_provider_name,
-      //   },
-      // });
     }
 
     return result.success;

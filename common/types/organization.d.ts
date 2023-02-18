@@ -44,5 +44,7 @@ export interface CreateOrganizationFullParams {
 }
 
 export interface CreateOrganizationResponse {
+  invitiationId: string;
+  organizationId: string;
   invitationUrl: string;
 }

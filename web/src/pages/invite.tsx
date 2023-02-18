@@ -1,5 +1,5 @@
 import React from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import { Layout } from "../components/layout/layout";
@@ -12,22 +12,21 @@ interface InviteParams {
 }
 
 const InvitePage: React.FC = () => {
-  const { loginWithRedirect, loginWithPopup } = useAuth0();
-
+  const { loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const paramsKv = Object.fromEntries(searchParams.entries()) as InviteParams;
 
-  const title =
-    paramsKv.invitation && paramsKv.organization_name
-      ? `Welcome to ${paramsKv.organization_name}`
-      : "Welcome";
+  if (
+    !paramsKv.invitation ||
+    !paramsKv.organization ||
+    !paramsKv.organization_name
+  ) {
+    navigate("/");
+  }
 
-  const body =
-    paramsKv.invitation && paramsKv.organization_name
-      ? `Hey! 👋 It looks like you've received an invitation to join the 
-            ${paramsKv.organization_name} organization, so that's cool. Generally in real life we'd redirect you immediately without showing you this page, but for our purposes it's useful to see what's actually happening here.`
-      : "Hey! usually people arrive at this page when they click on a link inviting them to an hr0 organization - but you don't seem to have an invitation. Maybe try signing in normally?";
+  const title = "Redirecting you to sign in";
 
   const handleCreateAccount = () => {
     void loginWithRedirect({
@@ -39,11 +38,13 @@ const InvitePage: React.FC = () => {
     });
   };
 
+  void handleCreateAccount();
+
   return (
     <Layout title="Sign In">
       <Container title={title}>
         <div>
-          <p>{body}</p>
+          <p>If you aren't redirected, click here to sign up.</p>
           <button
             className="btn-outline btn-secondary btn"
             onClick={handleCreateAccount}
@@ -52,7 +53,7 @@ const InvitePage: React.FC = () => {
           </button>
         </div>
 
-        <table className="table-auto border-collapse border border-slate-400">
+        {/* <table className="table-auto border-collapse border border-slate-400">
           <thead>
             <tr>
               <th className="border border-slate-300 bg-slate-200 p-2 font-bold">
@@ -79,7 +80,7 @@ const InvitePage: React.FC = () => {
               )
             )}
           </tbody>
-        </table>
+        </table> */}
       </Container>
     </Layout>
   );

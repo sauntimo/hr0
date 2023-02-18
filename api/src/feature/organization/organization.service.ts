@@ -82,9 +82,14 @@ export const createOrganization = async ({
     return auth0InviteResult;
   }
 
-  const data = {
-    invitationUrl: auth0InviteResult.data.invitation_url,
-  };
+  const {
+    id: invitiationId,
+    organization_id: organizationId,
+    invitation_url: invitationUrl,
+  } = auth0InviteResult.data;
 
-  return { success: true, data };
+  return {
+    success: true,
+    data: { invitiationId, organizationId, invitationUrl },
+  };
 };
