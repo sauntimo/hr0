@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 import { Layout } from "../components/layout/layout";
 import { Container } from "../components/layout/container";
+import { SCOPES } from "../config/globals";
 
 interface InviteParams {
   invitation?: string;
@@ -31,6 +32,7 @@ const InvitePage: React.FC = () => {
   const handleCreateAccount = () => {
     void loginWithRedirect({
       authorizationParams: {
+        scopes: SCOPES,
         organization: paramsKv.organization,
         invitation: paramsKv.invitation,
         useCookiesForTransactions: false,

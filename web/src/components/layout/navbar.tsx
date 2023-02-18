@@ -6,6 +6,8 @@ import { redirecLoginOptions } from "../../utils/auth";
 import { Link } from "react-router-dom";
 import { useStore } from "../../state/app-state";
 import { BreadcrumbContext } from "../../hooks/useBreadcrumbs";
+import { callExternalApi } from "../../utils/external-api.service";
+import { API_URL } from "../../config/globals";
 
 export const NavBar: React.FC = () => {
   const navigate = useNavigate();
@@ -45,6 +47,18 @@ export const NavBar: React.FC = () => {
 
   const { breadcrumbs } = useContext(BreadcrumbContext);
 
+  const nukeItFromOrbit = async () => {
+    const result = await callExternalApi({
+      config: {
+        url: `${API_URL}/admin/nuke`,
+        method: "DELETE",
+        withCredentials: false,
+      },
+    });
+    console.log(result);
+    void handleLogout();
+  };
+
   return (
     <nav className="navbar sticky top-0 bg-base-100 shadow-md">
       <div className="flex-1">
@@ -52,6 +66,9 @@ export const NavBar: React.FC = () => {
           hr0
         </Link>
       </div>
+      <button className="btn-error btn mr-8" onClick={nukeItFromOrbit}>
+        Nuke it
+      </button>
       {breadcrumbs.length > 1 && (
         <div className="breadcrumbs text-sm">
           <ul>

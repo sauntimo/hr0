@@ -73,6 +73,7 @@ export const createOrganization = async ({
     inviterName: organizationCreate.user_name,
     inviteeEmail: organizationCreate.user_email,
     authProviderOrganizationId: newOrgId,
+    roles: ["rol_s9nkwrBDR9z70MI0"], // admin-role
     app_metadata: {
       userId,
     },

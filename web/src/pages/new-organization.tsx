@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "../components/layout/card";
 
 import { callExternalApi } from "../utils/external-api.service";
-import { API_URL, SCOPES } from "../config/globals";
+import { API_URL } from "../config/globals";
 import type { CustomFormField } from "../components/forms/custom-form";
 import { CustomForm } from "../components/forms/custom-form";
 
@@ -16,7 +16,7 @@ import type {
 } from "@commonTypes/organization";
 
 const NewOrganizationPage: React.FC = () => {
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated } = useAuth0();
   const navigate = useNavigate();
 
   const [feedback, setFeedback] = useState<string | null>(null);

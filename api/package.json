@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
-    "dev": "concurrently --names \"TSC,NODEMON\" \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    "dev": "concurrently --names \"TSC,NODEMON\" \"npx tsc --watch\" \"NODE_ENV=\"develop\" nodemon -q dist/index.js\""
   },
   "author": "@sauntimo",
   "license": "ISC",

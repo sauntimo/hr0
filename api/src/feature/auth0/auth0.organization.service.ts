@@ -14,6 +14,7 @@ interface InviteOrgMemeberParams {
   inviteeEmail: string;
   authProviderOrganizationId: string;
   app_metadata: { userId: number };
+  roles?: string[];
 }
 
 interface InvitiationResponse {
@@ -34,6 +35,7 @@ export const inviteOrgMember = async ({
   inviteeEmail,
   authProviderOrganizationId,
   app_metadata,
+  roles,
 }: InviteOrgMemeberParams): Promise<ApiResponse<OrganizationInvitation>> => {
   try {
     const result = await auth0ManagementClient.organizations.createInvitation(
@@ -44,7 +46,7 @@ export const inviteOrgMember = async ({
         client_id: AUTH0_CLIENT_ID,
         connection_id: "con_O5JCFevNxvWugiuK",
         ttl_sec: 0, // 7 days
-        // roles: ["ROLE_ID", "ROLE_ID", "ROLE_ID"],
+        roles,
         send_invitation_email: true,
         app_metadata,
       }
