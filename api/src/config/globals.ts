@@ -14,3 +14,4 @@ export const AUTH0_CONNECTION_ID = process.env.AUTH0_CONNECTION_ID ?? "";
 export const AUTH0_M2M_CLIENT_ID = process.env.AUTH0_M2M_CLIENT_ID ?? "";
 export const AUTH0_M2M_CLIENT_SECRET =
   process.env.AUTH0_M2M_CLIENT_SECRET ?? "";
+export const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET ?? "";

@@ -5,3 +5,5 @@ export const CALLBACK_URL = process.env.REACT_APP_AUTH0_CALLBACK_URL ?? "";
 export const API_URL = process.env.REACT_APP_API_BASE_URL ?? "";
 export const STATE = "some-random-state-here";
 export const SCOPES = process.env.REACT_APP_SCOPES ?? "";
+export const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL ?? "";
+export const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY ?? "";

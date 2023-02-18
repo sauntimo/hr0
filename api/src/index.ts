@@ -1,3 +1,5 @@
+import fs from "fs";
+import https from "https";
 import express, { Express } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -21,9 +23,7 @@ import { auth0Router } from "./feature/auth0/auth0.router";
 import { userRouter } from "./feature/user/user.router";
 import { organizationRouter } from "./feature/organization/organization.router";
 import { adminRouter } from "./feature/admin/admin";
-
-import fs from "fs";
-import https from "https";
+import { supabaseRouter } from "./feature/supabase/token";
 
 const privateKey = fs.readFileSync(
   "/Users/tim.saunders/work/code/localhost+1-key.pem",
@@ -100,6 +100,7 @@ apiRouter.use("/user", userRouter);
 apiRouter.use("/organization", organizationRouter);
 apiRouter.use("/auth0", auth0Router);
 apiRouter.use("/admin", adminRouter);
+apiRouter.use("/supabase", supabaseRouter);
 
 app.get("/", (req, res, next) => {
   res.status(200).json({ status: "ok" });

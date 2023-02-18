@@ -1,37 +1,45 @@
-import type { user } from "@prismaTypes/index";
-import { callExternalApi } from "../../utils/external-api.service";
-import { API_URL } from "../../config/globals";
 import { useStore } from "../../state/app-state";
 import { Card } from "../layout/card";
 import type { CustomFormField } from "./custom-form";
 import { CustomForm } from "./custom-form";
+import { getSupabaseClient } from "../../db/supabase";
+import { Database } from "../../../lib/database.types";
+
+export type SbUser = Database["public"]["Tables"]["user"]["Row"];
 
 export const UserAccountForm: React.FC = () => {
   const [accessToken] = useStore((state) => [state.accessToken]);
   const [idToken] = useStore((state) => [state.idToken]);
   const [user, setUser] = useStore((state) => [state.user, state.setUser]);
+  const [supabaseAccessToken] = useStore((state) => [
+    state.supabaseAccessToken,
+  ]);
 
-  const onSubmit = async (userUpdate: Partial<user>): Promise<boolean> => {
-    if (!idToken || !accessToken) {
+  const onSubmit = async (userUpdate: Partial<SbUser>): Promise<boolean> => {
+    if (!idToken || !accessToken || !supabaseAccessToken) {
       return false;
     }
+    try {
+      const supabaseClient = getSupabaseClient({ supabaseAccessToken });
 
-    const result = await callExternalApi<user>({
-      config: {
-        url: `${API_URL}/user/${idToken.sub}`,
-        method: "PATCH",
-        data: { ...userUpdate, sub: idToken.sub },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        withCredentials: false,
-      },
-    });
+      const userResult = await supabaseClient
+        .from("user")
+        .update(userUpdate)
+        .eq("sub", idToken.sub)
+        .select();
 
-    if (result.success) {
-      setUser({ ...user, ...result.data });
+      if (userResult.error) {
+        throw new Error(userResult.error.message);
+      }
+
+      const updatedUser = userResult.data[0];
+
+      setUser({ ...user, ...updatedUser });
+
+      return true;
+    } catch (error) {
+      return false;
     }
-    return result.success;
   };
 
   if (!user) {

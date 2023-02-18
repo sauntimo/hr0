@@ -11,6 +11,7 @@ import { UserAccountForm } from "../components/forms/user-account-form";
 import { Link } from "react-router-dom";
 import { useStore } from "../state/app-state";
 import { Card } from "../components/layout/card";
+import { getSupabaseToken } from "../db/supabase";
 
 const AccountPage: React.FC = () => {
   const {
@@ -32,6 +33,10 @@ const AccountPage: React.FC = () => {
     state.setAccessToken,
   ]);
   const [, setScopes] = useStore((state) => [state.scopes, state.setScopes]);
+  const [supabaseAccessToken, setSupabaseAccessToken] = useStore((state) => [
+    state.supabaseAccessToken,
+    state.setSupabaseAccessToken,
+  ]);
 
   useEffect(() => {
     if (!isAuthenticated || (accessToken && idToken)) {
@@ -60,11 +65,28 @@ const AccountPage: React.FC = () => {
       }
 
       setIdToken(idToken);
-      localStorage.setItem("idToken", JSON.stringify(idToken));
     };
 
     void getToken();
   }, [getAccessTokenSilently]);
+
+  useEffect(() => {
+    if (supabaseAccessToken || !accessToken) {
+      return;
+    }
+
+    const getSupabaseTokenWrapper = async () => {
+      const supabaseTokenResult = await getSupabaseToken({
+        auth0AccessToken: accessToken,
+      });
+
+      if (supabaseTokenResult.success) {
+        setSupabaseAccessToken(supabaseTokenResult.data.accessToken);
+      }
+    };
+
+    void getSupabaseTokenWrapper();
+  }, [accessToken]);
 
   useEffect(() => {
     if (!isAuthenticated || user || !idToken?.sub) {

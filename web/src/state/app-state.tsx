@@ -3,15 +3,17 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { IdTokenWithSub } from "../types/jwt";
 import type { user, organization } from "@prismaTypes/index";
 import { mountStoreDevtool } from "simple-zustand-devtools";
+import { SbUser } from "../components/forms/user-account-form";
 
 interface AppState {
   scopes?: string;
   accessToken?: string;
   idToken?: IdTokenWithSub;
-  user?: user;
+  user?: SbUser | user;
   organization?: organization;
   organizationUsers: user[];
   users: Record<number, user>;
+  supabaseAccessToken?: string;
 }
 
 const initalState: AppState = {
@@ -22,6 +24,7 @@ const initalState: AppState = {
   users: {},
   organization: undefined,
   organizationUsers: [],
+  supabaseAccessToken: undefined,
 };
 
 interface AppStateActions {
@@ -34,6 +37,9 @@ interface AppStateActions {
     organizationUsers: AppState["organizationUsers"]
   ) => void;
   addUserToState: (user: user) => void;
+  setSupabaseAccessToken: (
+    supabaseAccessToken: AppState["supabaseAccessToken"]
+  ) => void;
   resetState: () => void;
 }
 
@@ -53,6 +59,8 @@ export const useStore = create<AppState & AppStateActions>()(
         set((state) => ({
           users: Object.assign(state.users, { [user.id]: user }),
         })),
+      setSupabaseAccessToken: (supabaseAccessToken) =>
+        set(() => ({ supabaseAccessToken })),
 
       resetState: () => {
         set(initalState);
