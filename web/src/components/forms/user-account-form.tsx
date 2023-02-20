@@ -2,10 +2,13 @@ import { useStore } from "../../state/app-state";
 import { Card } from "../layout/card";
 import type { CustomFormField } from "./custom-form";
 import { CustomForm } from "./custom-form";
-import { getSupabaseClient } from "../../db/supabase";
-import { Database } from "../../../lib/database.types";
+import { getSupabaseClient, supabaseClient } from "../../db/supabase";
+import type { Database } from "@commonTypes/supabase";
+import { useEffect, useState } from "react";
 
 export type SbUser = Database["public"]["Tables"]["user"]["Row"];
+
+type SupbaseClientType = Awaited<ReturnType<typeof getSupabaseClient>>;
 
 export const UserAccountForm: React.FC = () => {
   const [accessToken] = useStore((state) => [state.accessToken]);
@@ -14,15 +17,85 @@ export const UserAccountForm: React.FC = () => {
   const [supabaseAccessToken] = useStore((state) => [
     state.supabaseAccessToken,
   ]);
+  const [supabaseRefreshToken] = useStore((state) => [
+    state.supabaseRefreshToken,
+  ]);
+
+  const [supabase, setSupabase] = useState<SupbaseClientType | null>();
+
+  useEffect(() => {
+    if (!supabaseAccessToken) {
+      return;
+    }
+
+    const setup = async () => {
+      const client = await getSupabaseClient({
+        supabaseAccessToken,
+        supabaseRefreshToken,
+      });
+
+      setSupabase(client);
+    };
+
+    void setup();
+
+    // return channel.unsubscribe();
+  }, [supabaseAccessToken]);
+
+  useEffect(() => {
+    if (!supabase) {
+      return;
+    }
+    const test = () => {
+      // const user = await supabase.auth.getUser();
+      // const test = await supabase.from("user").select("*");
+      // console.log({ test, user });
+
+      const channel = supabase
+        .channel("tim-test")
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+          },
+          (payload) => console.log(payload)
+        )
+        // .subscribe((status) => {
+        //   console.log("subscribe status = ", status);
+        // });
+        .subscribe();
+    };
+
+    void test();
+  }, [supabase]);
+
+  // ((auth.jwt() ->> 'sub'::text) = (uuid)::text)
+
+  // useEffect(() => {
+  //   supabaseClient
+  //     .channel("tim-test-2")
+  //     .on(
+  //       "postgres_changes",
+  //       {
+  //         event: "UPDATE",
+  //         schema: "public",
+  //       },
+  //       (payload) => console.log(payload)
+  //     )
+  //     .subscribe((status) => {
+  //       console.log("subscribe status = ", status);
+  //     });
+  // }, []);
+
+  // const supabaseClient = getSupabaseClient({ supabaseAccessToken });
 
   const onSubmit = async (userUpdate: Partial<SbUser>): Promise<boolean> => {
-    if (!idToken || !accessToken || !supabaseAccessToken) {
+    if (!idToken || !accessToken || !supabase) {
       return false;
     }
     try {
-      const supabaseClient = getSupabaseClient({ supabaseAccessToken });
-
-      const userResult = await supabaseClient
+      const userResult = await supabase
         .from("user")
         .update(userUpdate)
         .eq("sub", idToken.sub)

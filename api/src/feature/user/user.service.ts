@@ -9,16 +9,17 @@ import {
   UpdateUserBySubParams,
 } from "./user.types";
 import { AppError } from "../../errors/app-error";
+import { UserRow } from "@commonTypes/database";
 
 export const createUser = async ({
   user,
-}: CreateUserParams): Promise<ApiResponse<user>> => {
+}: CreateUserParams): Promise<ApiResponse<UserRow>> => {
   return userRepository.createUser({ user });
 };
 
 export const updateUser = async ({
   user,
-}: UpdateUserBySubParams): Promise<ApiResponse<user>> => {
+}: UpdateUserBySubParams): Promise<ApiResponse<UserRow>> => {
   return userRepository.updateUserBySub({ user });
 };
 
@@ -30,7 +31,7 @@ export interface GetUserBySubParams {
 export const getUserBySub = async ({
   sub,
   orgAuthProviderId,
-}: GetUserBySubParams): Promise<ApiResponse<user>> => {
+}: GetUserBySubParams): Promise<ApiResponse<UserRow>> => {
   try {
     const userBySubResult = await userRepository.getUserBySub({ sub });
 
@@ -90,12 +91,12 @@ export const getUserBySub = async ({
 export const getUserById = async ({
   userId,
   orgAuthProviderId,
-}: GetUserByIdParams): Promise<ApiResponse<user>> => {
+}: GetUserByIdParams): Promise<ApiResponse<UserRow>> => {
   return userRepository.getUserById({ userId, orgAuthProviderId });
 };
 
 export const getUsersByOrg = async ({
   org,
-}: GetUsersByOrgParams): Promise<ApiResponse<user[]>> => {
+}: GetUsersByOrgParams): Promise<ApiResponse<UserRow[]>> => {
   return userRepository.getUsersByOrg({ org });
 };

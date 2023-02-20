@@ -15,3 +15,5 @@ export const AUTH0_M2M_CLIENT_ID = process.env.AUTH0_M2M_CLIENT_ID ?? "";
 export const AUTH0_M2M_CLIENT_SECRET =
   process.env.AUTH0_M2M_CLIENT_SECRET ?? "";
 export const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET ?? "";
+export const SUPABASE_PRIVATE_KEY = process.env.SUPABASE_PRIVATE_KEY ?? "";
+export const SUPABASE_API_URL = process.env.SUPABASE_API_URL ?? "";

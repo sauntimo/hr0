@@ -6,6 +6,7 @@ export interface UserCreate {
   created_at: Date;
   organization_auth_provider_id: string;
   picture?: string;
+  uuid: string;
 }
 
 interface UserUpdate extends Partial<UserCreate> {

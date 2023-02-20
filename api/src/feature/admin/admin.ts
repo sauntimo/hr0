@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { auth0ManagementClient } from "../..";
 import { prisma } from "../../db/prisma";
+import { supabaseClient } from "../../db/supabase";
 
 export const adminRouter = express.Router();
 
@@ -31,6 +32,18 @@ adminRouter.delete("/nuke", async (req: Request, res: Response) => {
       });
     });
 
+    // get users
+    const supabaseUsersResult = await supabaseClient.from("user").select("*");
+
+    if (supabaseUsersResult.error) {
+      throw new Error("failed to get supbase users");
+    }
+
+    // delete auth users
+    supabaseUsersResult.data.forEach(async (user) => {
+      const test = await supabaseClient.auth.admin.deleteUser(user.uuid, false);
+    });
+
     await prisma.$transaction([
       prisma.$queryRawUnsafe("TRUNCATE organization CASCADE;"),
       prisma.$queryRawUnsafe("ALTER SEQUENCE organization_id_seq RESTART;"),
@@ -39,6 +52,7 @@ adminRouter.delete("/nuke", async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "ok" });
   } catch (error) {
+    console.error(error);
     res.status(400).json({ message: "fail" });
   }
 });

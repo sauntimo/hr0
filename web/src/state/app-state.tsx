@@ -13,7 +13,8 @@ interface AppState {
   organization?: organization;
   organizationUsers: user[];
   users: Record<number, user>;
-  supabaseAccessToken?: string;
+  supabaseAccessToken: string;
+  supabaseRefreshToken: string;
 }
 
 const initalState: AppState = {
@@ -24,7 +25,8 @@ const initalState: AppState = {
   users: {},
   organization: undefined,
   organizationUsers: [],
-  supabaseAccessToken: undefined,
+  supabaseAccessToken: "",
+  supabaseRefreshToken: "",
 };
 
 interface AppStateActions {
@@ -40,6 +42,9 @@ interface AppStateActions {
   setSupabaseAccessToken: (
     supabaseAccessToken: AppState["supabaseAccessToken"]
   ) => void;
+  setSupabaseRefreshToken: (
+    supabaseRefreshToken: AppState["supabaseRefreshToken"]
+  ) => void;
   resetState: () => void;
 }
 
@@ -48,6 +53,8 @@ export const useStore = create<AppState & AppStateActions>()(
     (set) => ({
       organizationUsers: [],
       users: {},
+      supabaseAccessToken: "",
+      supabaseRefreshToken: "",
       setScopes: (scopes) => set(() => ({ scopes })),
       setAccessToken: (accessToken) => set(() => ({ accessToken })),
       setIdToken: (idToken) => set(() => ({ idToken })),
@@ -61,6 +68,8 @@ export const useStore = create<AppState & AppStateActions>()(
         })),
       setSupabaseAccessToken: (supabaseAccessToken) =>
         set(() => ({ supabaseAccessToken })),
+      setSupabaseRefreshToken: (supabaseRefreshToken) =>
+        set(() => ({ supabaseRefreshToken })),
 
       resetState: () => {
         set(initalState);

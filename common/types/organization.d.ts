@@ -33,6 +33,7 @@ export interface OrganizationCreate {
 export interface OrganizationCreateFull extends OrganizationCreate {
   org_id: string;
   user_sub: string;
+  user_uuid: string;
 }
 
 export interface CreateOrganizationParams {

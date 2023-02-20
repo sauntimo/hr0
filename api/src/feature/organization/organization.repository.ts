@@ -1,26 +1,33 @@
 import { ApiResponse } from "@commonTypes/api-response";
-import { organization } from "@prisma/client";
-import { prisma } from "../../db/prisma";
+// import { organization } from "@prisma/client";
+// import { prisma } from "../../db/prisma";
 import { AppError } from "../../errors/app-error";
 import {
   CreateOrganizationFullParams,
   GetOrganizationByAuthIDParams,
   UpdateOrganizationByAuthIdparams,
 } from "@commonTypes/organization";
+import { supabaseClient } from "../../db/supabase";
+import type { OrganizationRow } from "@commonTypes/database";
 
 export const getOrganizationByAuthId = async ({
   organizationAuthId,
-}: GetOrganizationByAuthIDParams): Promise<ApiResponse<organization>> => {
+}: GetOrganizationByAuthIDParams): Promise<ApiResponse<OrganizationRow>> => {
   try {
-    const result = await prisma.organization.findUnique({
-      where: { auth_provider_id: organizationAuthId },
-    });
+    const orgResult = await supabaseClient
+      .from("organization")
+      .select("*")
+      .eq("auth_provider_id", organizationAuthId);
 
-    if (!result) {
+    // const result = await prisma.organization.findUnique({
+    //   where: { auth_provider_id: organizationAuthId },
+    // });
+
+    if (orgResult.error || orgResult.data.length === 0) {
       throw new AppError("Organization not found");
     }
 
-    return { success: true, data: result };
+    return { success: true, data: orgResult.data[0] };
   } catch (error) {
     console.error(error);
 
@@ -30,16 +37,25 @@ export const getOrganizationByAuthId = async ({
 
 export const updateOrganizationByAuthId = async ({
   organization,
-}: UpdateOrganizationByAuthIdparams): Promise<ApiResponse<organization>> => {
+}: UpdateOrganizationByAuthIdparams): Promise<ApiResponse<OrganizationRow>> => {
   try {
     const { auth_provider_id, ...data } = organization;
 
-    const result = await prisma.organization.update({
-      where: { auth_provider_id },
-      data,
-    });
+    const updateOrgResult = await supabaseClient
+      .from("organization")
+      .update(data)
+      .eq("auth_provider_id", auth_provider_id)
+      .select();
 
-    return { success: true, data: result };
+    if (updateOrgResult.error || updateOrgResult.data.length === 0) {
+      throw new AppError("Failed to update organization");
+    }
+    // const result = await prisma.organization.update({
+    //   where: { auth_provider_id },
+    //   data,
+    // });
+
+    return { success: true, data: updateOrgResult.data[0] };
   } catch (error) {
     console.error(error);
 
@@ -54,20 +70,42 @@ export const createOrganization = async ({
   organizationCreate,
 }: CreateOrganizationFullParams): Promise<ApiResponse> => {
   try {
-    const result = await prisma.organization.create({
-      data: {
+    const newOrgResult = await supabaseClient
+      .from("organization")
+      .insert({
         auth_provider_name: organizationCreate.org_auth_provider_name,
         auth_provider_id: organizationCreate.org_id,
         name: organizationCreate.org_display_name,
-        user: {
-          create: {
-            sub: organizationCreate.user_sub,
-            name: organizationCreate.user_name,
-            email: organizationCreate.user_email,
-          },
-        },
-      },
+      })
+      .select();
+
+    if (newOrgResult.error || newOrgResult.data.length === 0) {
+      throw new AppError("Failed to create organization");
+    }
+
+    await supabaseClient.from("user").insert({
+      sub: organizationCreate.user_sub,
+      name: organizationCreate.user_name,
+      email: organizationCreate.user_email,
+      uuid: organizationCreate.user_uuid,
+      organization_id: newOrgResult.data[0].id,
     });
+
+    // const result = await prisma.organization.create({
+    //   data: {
+    //     auth_provider_name: organizationCreate.org_auth_provider_name,
+    //     auth_provider_id: organizationCreate.org_id,
+    //     name: organizationCreate.org_display_name,
+    //     user: {
+    //       create: {
+    //         uuid: uuid4(),
+    //         sub: organizationCreate.user_sub,
+    //         name: organizationCreate.user_name,
+    //         email: organizationCreate.user_email,
+    //       },
+    //     },
+    //   },
+    // });
 
     return { success: true };
   } catch (error) {

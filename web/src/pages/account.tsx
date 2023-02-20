@@ -11,7 +11,7 @@ import { UserAccountForm } from "../components/forms/user-account-form";
 import { Link } from "react-router-dom";
 import { useStore } from "../state/app-state";
 import { Card } from "../components/layout/card";
-import { getSupabaseToken } from "../db/supabase";
+import { getSupabaseToken, supabaseClient } from "../db/supabase";
 
 const AccountPage: React.FC = () => {
   const {
@@ -36,6 +36,10 @@ const AccountPage: React.FC = () => {
   const [supabaseAccessToken, setSupabaseAccessToken] = useStore((state) => [
     state.supabaseAccessToken,
     state.setSupabaseAccessToken,
+  ]);
+  const [supabaseRefreshToken, setSupabaseRefreshToken] = useStore((state) => [
+    state.supabaseRefreshToken,
+    state.setSupabaseRefreshToken,
   ]);
 
   useEffect(() => {
@@ -81,7 +85,8 @@ const AccountPage: React.FC = () => {
       });
 
       if (supabaseTokenResult.success) {
-        setSupabaseAccessToken(supabaseTokenResult.data.accessToken);
+        setSupabaseAccessToken(supabaseTokenResult.data.access_token);
+        setSupabaseRefreshToken(supabaseTokenResult.data.refresh_token);
       }
     };
 
