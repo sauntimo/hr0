@@ -9,6 +9,7 @@ import { HelmetProvider } from "react-helmet-async";
 
 import "./state/app-state";
 import { BreadcrumbProvider } from "./hooks/useBreadcrumbs";
+import { SupabaseProvider } from "./hooks/useSupabase";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -19,9 +20,11 @@ root.render(
   <BrowserRouter>
     <Auth0ProviderWithNavigate>
       <HelmetProvider>
-        <BreadcrumbProvider>
-          <App />
-        </BreadcrumbProvider>
+        <SupabaseProvider>
+          <BreadcrumbProvider>
+            <App />
+          </BreadcrumbProvider>
+        </SupabaseProvider>
       </HelmetProvider>
     </Auth0ProviderWithNavigate>
   </BrowserRouter>

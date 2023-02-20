@@ -5,13 +5,12 @@ import { Container } from "../components/layout/container";
 import { Layout } from "../components/layout/layout";
 import { API_URL, AUDIENCE, SCOPES } from "../config/globals";
 import { callExternalApi } from "../utils/external-api.service";
-import type { user } from "@prismaTypes/index";
 import type { IdTokenWithSub } from "../types/jwt";
 import { UserAccountForm } from "../components/forms/user-account-form";
 import { Link } from "react-router-dom";
 import { useStore } from "../state/app-state";
 import { Card } from "../components/layout/card";
-import { getSupabaseToken, supabaseClient } from "../db/supabase";
+import { UserRow } from "@commonTypes/Database";
 
 const AccountPage: React.FC = () => {
   const {
@@ -33,14 +32,6 @@ const AccountPage: React.FC = () => {
     state.setAccessToken,
   ]);
   const [, setScopes] = useStore((state) => [state.scopes, state.setScopes]);
-  const [supabaseAccessToken, setSupabaseAccessToken] = useStore((state) => [
-    state.supabaseAccessToken,
-    state.setSupabaseAccessToken,
-  ]);
-  const [supabaseRefreshToken, setSupabaseRefreshToken] = useStore((state) => [
-    state.supabaseRefreshToken,
-    state.setSupabaseRefreshToken,
-  ]);
 
   useEffect(() => {
     if (!isAuthenticated || (accessToken && idToken)) {
@@ -75,30 +66,11 @@ const AccountPage: React.FC = () => {
   }, [getAccessTokenSilently]);
 
   useEffect(() => {
-    if (supabaseAccessToken || !accessToken) {
-      return;
-    }
-
-    const getSupabaseTokenWrapper = async () => {
-      const supabaseTokenResult = await getSupabaseToken({
-        auth0AccessToken: accessToken,
-      });
-
-      if (supabaseTokenResult.success) {
-        setSupabaseAccessToken(supabaseTokenResult.data.access_token);
-        setSupabaseRefreshToken(supabaseTokenResult.data.refresh_token);
-      }
-    };
-
-    void getSupabaseTokenWrapper();
-  }, [accessToken]);
-
-  useEffect(() => {
     if (!isAuthenticated || user || !idToken?.sub) {
       return;
     }
     const getUser = async () => {
-      const result = await callExternalApi<user>({
+      const result = await callExternalApi<UserRow>({
         config: {
           url: `${API_URL}/user/by-sub/${idToken?.sub ?? ""}`,
           method: "GET",

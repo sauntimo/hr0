@@ -40,6 +40,10 @@ export const CustomForm = <T extends FieldValues>({
     setIsError(Object.entries(errors).length > 0);
   }, [errors]);
 
+  useDeepCompareEffect(() => {
+    console.log("fields changed in custom-form");
+  }, [fields]);
+
   return (
     <form
       onSubmit={onSubmit && handleSubmit(onSubmit)}

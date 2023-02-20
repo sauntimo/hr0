@@ -3,13 +3,13 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { IdTokenWithSub } from "../types/jwt";
 import type { user, organization } from "@prismaTypes/index";
 import { mountStoreDevtool } from "simple-zustand-devtools";
-import { SbUser } from "../components/forms/user-account-form";
+import { UserRow } from "@commonTypes/Database";
 
 interface AppState {
   scopes?: string;
   accessToken?: string;
   idToken?: IdTokenWithSub;
-  user?: SbUser | user;
+  user?: UserRow;
   organization?: organization;
   organizationUsers: user[];
   users: Record<number, user>;

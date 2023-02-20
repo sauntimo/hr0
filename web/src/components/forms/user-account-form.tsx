@@ -2,100 +2,24 @@ import { useStore } from "../../state/app-state";
 import { Card } from "../layout/card";
 import type { CustomFormField } from "./custom-form";
 import { CustomForm } from "./custom-form";
-import { getSupabaseClient, supabaseClient } from "../../db/supabase";
-import type { Database } from "@commonTypes/supabase";
+import type { UserRow } from "@commonTypes/Database";
+import { useSupabaseContext } from "../../hooks/useSupabase";
 import { useEffect, useState } from "react";
-
-export type SbUser = Database["public"]["Tables"]["user"]["Row"];
-
-type SupbaseClientType = Awaited<ReturnType<typeof getSupabaseClient>>;
+import { useDeepCompareEffect } from "react-use";
 
 export const UserAccountForm: React.FC = () => {
-  const [accessToken] = useStore((state) => [state.accessToken]);
   const [idToken] = useStore((state) => [state.idToken]);
   const [user, setUser] = useStore((state) => [state.user, state.setUser]);
-  const [supabaseAccessToken] = useStore((state) => [
-    state.supabaseAccessToken,
-  ]);
-  const [supabaseRefreshToken] = useStore((state) => [
-    state.supabaseRefreshToken,
-  ]);
+  const { client } = useSupabaseContext();
 
-  const [supabase, setSupabase] = useState<SupbaseClientType | null>();
+  // const unsub = useStore.subscribe((state) => setUser(state.user));
 
-  useEffect(() => {
-    if (!supabaseAccessToken) {
-      return;
-    }
-
-    const setup = async () => {
-      const client = await getSupabaseClient({
-        supabaseAccessToken,
-        supabaseRefreshToken,
-      });
-
-      setSupabase(client);
-    };
-
-    void setup();
-
-    // return channel.unsubscribe();
-  }, [supabaseAccessToken]);
-
-  useEffect(() => {
-    if (!supabase) {
-      return;
-    }
-    const test = () => {
-      // const user = await supabase.auth.getUser();
-      // const test = await supabase.from("user").select("*");
-      // console.log({ test, user });
-
-      const channel = supabase
-        .channel("tim-test")
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-          },
-          (payload) => console.log(payload)
-        )
-        // .subscribe((status) => {
-        //   console.log("subscribe status = ", status);
-        // });
-        .subscribe();
-    };
-
-    void test();
-  }, [supabase]);
-
-  // ((auth.jwt() ->> 'sub'::text) = (uuid)::text)
-
-  // useEffect(() => {
-  //   supabaseClient
-  //     .channel("tim-test-2")
-  //     .on(
-  //       "postgres_changes",
-  //       {
-  //         event: "UPDATE",
-  //         schema: "public",
-  //       },
-  //       (payload) => console.log(payload)
-  //     )
-  //     .subscribe((status) => {
-  //       console.log("subscribe status = ", status);
-  //     });
-  // }, []);
-
-  // const supabaseClient = getSupabaseClient({ supabaseAccessToken });
-
-  const onSubmit = async (userUpdate: Partial<SbUser>): Promise<boolean> => {
-    if (!idToken || !accessToken || !supabase) {
+  const onSubmit = async (userUpdate: Partial<UserRow>): Promise<boolean> => {
+    if (!idToken) {
       return false;
     }
     try {
-      const userResult = await supabase
+      const userResult = await client
         .from("user")
         .update(userUpdate)
         .eq("sub", idToken.sub)
@@ -119,30 +43,35 @@ export const UserAccountForm: React.FC = () => {
     return null;
   }
 
-  const fields: CustomFormField[] = [
-    {
-      initialValue: user.name,
-      label: "Name",
-      fieldName: "name",
-    },
-    {
-      initialValue: user.email,
-      label: "Email Address",
-      fieldName: "email",
-      editable: false,
-    },
-    {
-      initialValue: user.job_title,
-      label: "Job Title",
-      fieldName: "job_title",
-    },
-    {
-      initialValue: user.salary,
-      label: "Salary",
-      fieldName: "salary",
-      editable: false,
-    },
-  ];
+  const [fields, setFields] = useState<CustomFormField[]>([]);
+
+  useDeepCompareEffect(() => {
+    console.log("user changed");
+    setFields([
+      {
+        initialValue: user.name,
+        label: "Name",
+        fieldName: "name",
+      },
+      {
+        initialValue: user.email,
+        label: "Email Address",
+        fieldName: "email",
+        editable: false,
+      },
+      {
+        initialValue: user.job_title,
+        label: "Job Title",
+        fieldName: "job_title",
+      },
+      {
+        initialValue: user.salary,
+        label: "Salary",
+        fieldName: "salary",
+        editable: false,
+      },
+    ]);
+  }, [user]);
 
   return (
     <Card title="Update your personal details">
